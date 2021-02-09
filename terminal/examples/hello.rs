@@ -1,11 +1,11 @@
 use core::{
     math::Size,
     visitors::{layout::LayoutVisitor, paint::PaintVisitor, Visitor},
-    widgets::{flex::Flex, text::Text},
+    widgets::WidgetExt,
     BoxConstraints, CommonPrimitive,
 };
-use empty::{TerminalBackend, TerminalPrimitive};
 use terminal::{Action, Clear, Retrieved, Value};
+use tui::{Border, Flex, TerminalBackend, TerminalPrimitive, Text};
 
 fn main() {
     let mut backend = TerminalBackend::default();
@@ -31,9 +31,16 @@ fn main() {
         _ => Size::new(0., 0.),
     };
 
-    let mut column = Flex::<String, TerminalPrimitive, TerminalBackend>::default();
+    let mut column = Flex::default();
     column.add_flex(text, 1);
-    column.add_flex(text_other, 1);
+    column.add_flex(
+        Border::new(
+            text_other
+                .map_primitive::<TerminalPrimitive>()
+                .map_context::<TerminalBackend>(),
+        ),
+        1,
+    );
 
     let mut layout_visitor = LayoutVisitor {
         box_constraints: BoxConstraints {

@@ -24,6 +24,26 @@ impl BoxConstraints {
         }
     }
 
+    /// Shrink min and max constraints by size
+    ///
+    /// The given size is also [rounded away from zero],
+    /// so that the layout is aligned to integers.
+    ///
+    /// [rounded away from zero]: struct.Size.html#method.expand
+    pub fn shrink(&self, diff: impl Into<Size>) -> BoxConstraints {
+        let diff = diff.into().expand();
+        let min = Size::new(
+            (self.min.width - diff.width).max(0.),
+            (self.min.height - diff.height).max(0.),
+        );
+        let max = Size::new(
+            (self.max.width - diff.width).max(0.),
+            (self.max.height - diff.height).max(0.),
+        );
+
+        BoxConstraints { min, max }
+    }
+
     /// Clamp a given size so that it fits within the constraints.
     ///
     /// The given size is also [rounded away from zero],

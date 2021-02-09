@@ -3,17 +3,17 @@ use std::collections::HashMap;
 use crate::{
     contexts::ContextProvider,
     math::{Size, Vector2},
-    BoxConstraints, CommonPrimitive,
+    Backend, BoxConstraints, CommonPrimitive,
 };
 
-use super::{pod::WidgetPod, Widget, WidgetExt};
+use super::{pod::WidgetPod, TypedWidget, Widget, WidgetExt};
 
-pub struct Flex<T, P, C> {
-    children: Vec<FlexChild<T, P, C>>,
+pub struct Flex<T, B: Backend> {
+    children: Vec<FlexChild<T, B>>,
 }
 
-struct FlexChild<T, P, C> {
-    pub widget: WidgetPod<T, P, C>,
+struct FlexChild<T, B: Backend> {
+    pub widget: WidgetPod<T, B>,
     pub flex_option: FlexOption,
 }
 
@@ -22,7 +22,7 @@ enum FlexOption {
     Flex(u8),
 }
 
-impl<T, P, C> Default for Flex<T, P, C> {
+impl<T, B: Backend> Default for Flex<T, B> {
     fn default() -> Self {
         Flex {
             children: Vec::default(),
@@ -30,35 +30,33 @@ impl<T, P, C> Default for Flex<T, P, C> {
     }
 }
 
-impl<T: 'static, P: 'static, C: 'static> Flex<T, P, C> {
-    pub fn add<W>(&mut self, widget: W)
+impl<T: 'static, B: Backend + 'static> Flex<T, B> {
+    pub fn add<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW)
     where
-        W: Widget<T> + 'static,
-        P: From<W::Primitive>,
-        C: ContextProvider<W::Context>,
+        B: ContextProvider<TW::Context>,
+        B::Primitive: From<TW::Primitive>,
     {
         self.children.push(FlexChild {
-            widget: WidgetPod::new(widget.map_primitive::<P>().map_context::<C>()),
+            widget: WidgetPod::new(widget.map_primitive::<B::Primitive>().map_context::<B>()),
             flex_option: FlexOption::NonFlex,
         })
     }
 
-    pub fn add_flex<W>(&mut self, widget: W, flex_factor: u8)
+    pub fn add_flex<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW, flex_factor: u8)
     where
-        W: Widget<T> + 'static,
-        P: From<W::Primitive>,
-        C: ContextProvider<W::Context>,
+        B: ContextProvider<TW::Context>,
+        B::Primitive: From<TW::Primitive>,
     {
         self.children.push(FlexChild {
-            widget: WidgetPod::new(widget.map_primitive::<P>().map_context::<C>()),
+            widget: WidgetPod::new(widget.map_primitive::<B::Primitive>().map_context::<B>()),
             flex_option: FlexOption::Flex(flex_factor),
         })
     }
 }
 
-impl<T, P, C> Widget<T> for Flex<T, P, C> {
-    type Primitive = CommonPrimitive<P>;
-    type Context = C;
+impl<T, B: Backend> Widget<T> for Flex<T, B> {
+    type Primitive = CommonPrimitive<B::Primitive>;
+    type Context = B;
 
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
         // Step 1 : Layout inflexible children
@@ -69,7 +67,10 @@ impl<T, P, C> Widget<T> for Flex<T, P, C> {
             .iter_mut()
             .enumerate()
             .filter_map(|(index, child)| match child.flex_option {
-                FlexOption::NonFlex => Some((index, child.widget.layout(&loosened, context, data))),
+                FlexOption::NonFlex => Some((
+                    index,
+                    TypedWidget::<T, B>::layout(&mut child.widget, &loosened, context, data),
+                )),
                 FlexOption::Flex(_) => None,
             })
             .collect();
@@ -109,7 +110,10 @@ impl<T, P, C> Widget<T> for Flex<T, P, C> {
                             height: bc.max.height,
                         },
                     };
-                    Some((index, child.widget.layout(&constraint, context, data)))
+                    Some((
+                        index,
+                        TypedWidget::<T, B>::layout(&mut child.widget, &constraint, context, data),
+                    ))
                 }
                 FlexOption::NonFlex => None,
             })
@@ -145,7 +149,7 @@ impl<T, P, C> Widget<T> for Flex<T, P, C> {
         let children = self
             .children
             .iter()
-            .map(|flex_child| flex_child.widget.draw(origin, data))
+            .map(|flex_child| TypedWidget::<T, B>::draw(&flex_child.widget, origin, data))
             .collect();
 
         CommonPrimitive::Group { children }

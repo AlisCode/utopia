@@ -1,16 +1,21 @@
-use crate::math::Vector2;
+use crate::{
+    math::{Size, Vector2},
+    Backend, BoxConstraints,
+};
 
-use super::Widget;
+use super::{TypedWidget, Widget};
 
-pub struct WidgetPod<T, P, C> {
-    widget: Box<dyn Widget<T, Primitive = P, Context = C>>,
+pub struct WidgetPod<T, B: Backend> {
+    widget: Box<dyn TypedWidget<T, B, Primitive = B::Primitive, Context = B>>,
     state: WidgetState,
 }
 
-impl<T, P, C> WidgetPod<T, P, C> {
-    pub fn new<W: Widget<T, Primitive = P, Context = C> + 'static>(widget: W) -> Self {
+impl<T, B: Backend> WidgetPod<T, B> {
+    pub fn new<TW: TypedWidget<T, B, Primitive = B::Primitive, Context = B> + 'static>(
+        typed_widget: TW,
+    ) -> Self {
         WidgetPod {
-            widget: Box::new(widget),
+            widget: Box::new(typed_widget),
             state: WidgetState::default(),
         }
     }
@@ -20,26 +25,20 @@ impl<T, P, C> WidgetPod<T, P, C> {
     }
 }
 
-#[derive(Debug, Default)]
-pub struct WidgetState {
-    origin: Vector2,
-}
+impl<T, B: Backend> Widget<T> for WidgetPod<T, B> {
+    type Primitive = B::Primitive;
+    type Context = B;
 
-impl<T, P, C> Widget<T> for WidgetPod<T, P, C> {
-    type Primitive = P;
-    type Context = C;
-
-    fn layout(
-        &mut self,
-        bc: &crate::BoxConstraints,
-        context: &Self::Context,
-        data: &T,
-    ) -> crate::math::Size {
-        self.widget.layout(bc, context, data)
+    fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
+        TypedWidget::<T, B>::layout(self.widget.as_mut(), bc, context, data)
     }
 
     fn draw(&self, origin: Vector2, data: &T) -> Self::Primitive {
-        // Maybe change the position ?
-        self.widget.draw(origin + self.state.origin, data)
+        TypedWidget::<T, B>::draw(self.widget.as_ref(), origin + self.state.origin, data)
     }
+}
+
+#[derive(Debug, Default)]
+pub struct WidgetState {
+    origin: Vector2,
 }

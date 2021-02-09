@@ -4,6 +4,12 @@ pub struct Size {
     pub height: f32,
 }
 
+impl From<(f32, f32)> for Size {
+    fn from((width, height): (f32, f32)) -> Self {
+        Size { width, height }
+    }
+}
+
 impl Size {
     pub const ZERO: Size = Size {
         width: 0.,

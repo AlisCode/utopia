@@ -1,7 +1,10 @@
 use core::{
     contexts::ContextProvider,
     math::Size,
-    widgets::text::{MeasureBrush, TextPrimitive},
+    widgets::{
+        border::QuadPrimitive,
+        text::{MeasureBrush, TextPrimitive},
+    },
     Backend, CommonPrimitive,
 };
 use std::io::{Stdout, Write};
@@ -11,6 +14,11 @@ pub struct TerminalBackend {
     measure_brush: MeasureBrush<()>,
     pub terminal: Terminal<Stdout>,
 }
+
+pub type Color = ();
+pub type Flex<T> = core::widgets::flex::Flex<T, TerminalBackend>;
+pub type Text = core::widgets::text::Text<(), Color>;
+pub type Border<T> = core::widgets::border::Border<T, Color, TerminalBackend>;
 
 impl TerminalBackend {
     pub fn draw_primitive(&mut self, primitive: TerminalPrimitive) -> terminal::error::Result<()> {
@@ -30,6 +38,25 @@ impl TerminalBackend {
                     text.origin.y as u16,
                 ))?;
                 self.terminal.write(text.content.as_bytes())?;
+            }
+            TerminalPrimitive::Quad(quad) => {
+                let full_line = "+--------+";
+                let blank_line = "|        |";
+                self.terminal.batch(Action::MoveCursorTo(
+                    quad.origin.x as u16,
+                    quad.origin.y as u16,
+                ))?;
+                self.terminal.write(full_line.as_bytes())?;
+                self.terminal.batch(Action::MoveCursorTo(
+                    quad.origin.x as u16,
+                    quad.origin.y as u16 + 1,
+                ))?;
+                self.terminal.write(blank_line.as_bytes())?;
+                self.terminal.batch(Action::MoveCursorTo(
+                    quad.origin.x as u16,
+                    quad.origin.y as u16 + 2,
+                ))?;
+                self.terminal.write(full_line.as_bytes())?;
             }
         }
 
@@ -62,7 +89,8 @@ impl Default for TerminalBackend {
 #[derive(Debug)]
 pub enum TerminalPrimitive {
     Common(CommonPrimitive<Self>),
-    Text(TextPrimitive<(), ()>),
+    Text(TextPrimitive<(), Color>),
+    Quad(QuadPrimitive<Color>),
 }
 
 fn measure_text(contents: &str, _font: (), _font_size: u16) -> Size {
@@ -78,13 +106,37 @@ impl ContextProvider<MeasureBrush<()>> for TerminalBackend {
     }
 }
 
+impl ContextProvider<()> for TerminalBackend {
+    fn provide(&self) -> &() {
+        &()
+    }
+}
+
+impl<A, B> From<(A, B)> for TerminalPrimitive
+where
+    TerminalPrimitive: From<A>,
+    TerminalPrimitive: From<B>,
+{
+    fn from((a, b): (A, B)) -> Self {
+        TerminalPrimitive::Common(CommonPrimitive::Group {
+            children: vec![a.into(), b.into()],
+        })
+    }
+}
+
+impl From<QuadPrimitive<Color>> for TerminalPrimitive {
+    fn from(quad: QuadPrimitive<Color>) -> TerminalPrimitive {
+        TerminalPrimitive::Quad(quad)
+    }
+}
+
 impl From<CommonPrimitive<Self>> for TerminalPrimitive {
     fn from(common: CommonPrimitive<Self>) -> TerminalPrimitive {
         TerminalPrimitive::Common(common)
     }
 }
 
-impl From<TextPrimitive<(), ()>> for TerminalPrimitive {
+impl From<TextPrimitive<(), Color>> for TerminalPrimitive {
     fn from(text: TextPrimitive<(), ()>) -> TerminalPrimitive {
         TerminalPrimitive::Text(text)
     }

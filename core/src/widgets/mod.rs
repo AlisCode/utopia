@@ -52,6 +52,19 @@ impl<T> Widget<T> for () {
     fn draw(&self, _bounds: Vector2, _data: &T) -> Self::Primitive {}
 }
 
+impl<T, W: Widget<T>> Widget<T> for Box<W> {
+    type Primitive = W::Primitive;
+    type Context = W::Context;
+
+    fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
+        self.as_mut().layout(bc, context, data)
+    }
+
+    fn draw(&self, origin: Vector2, data: &T) -> Self::Primitive {
+        self.as_ref().draw(origin, data)
+    }
+}
+
 pub trait TypedWidget<T, B: Backend>: sealed::InnerTypedWidget<T, B> {
     fn layout(&mut self, bc: &BoxConstraints, backend: &B, data: &T) -> Size;
     fn draw(&self, origin: Vector2, data: &T) -> B::Primitive;
@@ -74,7 +87,7 @@ mod sealed {
     use super::Widget;
     use crate::{contexts::ContextProvider, math::Vector2, Backend, BoxConstraints, Size};
 
-    pub trait InnerTypedWidget<T, B: Backend> {
+    pub trait InnerTypedWidget<T, B: Backend>: Widget<T> {
         fn layout(&mut self, bc: &BoxConstraints, backend: &B, data: &T) -> Size;
         fn draw(&self, bounds: Vector2, data: &T) -> B::Primitive;
     }
