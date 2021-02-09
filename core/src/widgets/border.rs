@@ -13,9 +13,7 @@ pub struct Border<T, Color, B: Backend> {
 }
 
 impl<T, Color: Default, B: Backend> Border<T, Color, B> {
-    pub fn new<TW: TypedWidget<T, B, Primitive = B::Primitive, Context = B> + 'static>(
-        widget: TW,
-    ) -> Self {
+    pub fn new<TW: TypedWidget<T, B> + Widget<T> + 'static>(widget: TW) -> Self {
         Border {
             border_color: Color::default(),
             border_radius: 0,

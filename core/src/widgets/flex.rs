@@ -31,7 +31,7 @@ impl<T, B: Backend> Default for Flex<T, B> {
 }
 
 impl<T: 'static, B: Backend + 'static> Flex<T, B> {
-    pub fn add<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW)
+    pub fn add<TW: TypedWidget<T, B> + Widget<T> + 'static>(&mut self, widget: TW)
     where
         B: ContextProvider<TW::Context>,
         B::Primitive: From<TW::Primitive>,
@@ -42,8 +42,11 @@ impl<T: 'static, B: Backend + 'static> Flex<T, B> {
         })
     }
 
-    pub fn add_flex<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW, flex_factor: u8)
-    where
+    pub fn add_flex<TW: TypedWidget<T, B> + Widget<T> + 'static>(
+        &mut self,
+        widget: TW,
+        flex_factor: u8,
+    ) where
         B: ContextProvider<TW::Context>,
         B::Primitive: From<TW::Primitive>,
     {

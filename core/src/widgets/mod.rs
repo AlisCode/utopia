@@ -87,7 +87,7 @@ mod sealed {
     use super::Widget;
     use crate::{contexts::ContextProvider, math::Vector2, Backend, BoxConstraints, Size};
 
-    pub trait InnerTypedWidget<T, B: Backend>: Widget<T> {
+    pub trait InnerTypedWidget<T, B: Backend> {
         fn layout(&mut self, bc: &BoxConstraints, backend: &B, data: &T) -> Size;
         fn draw(&self, bounds: Vector2, data: &T) -> B::Primitive;
     }

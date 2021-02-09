@@ -6,14 +6,12 @@ use crate::{
 use super::{TypedWidget, Widget};
 
 pub struct WidgetPod<T, B: Backend> {
-    widget: Box<dyn TypedWidget<T, B, Primitive = B::Primitive, Context = B>>,
+    widget: Box<dyn TypedWidget<T, B>>,
     state: WidgetState,
 }
 
 impl<T, B: Backend> WidgetPod<T, B> {
-    pub fn new<TW: TypedWidget<T, B, Primitive = B::Primitive, Context = B> + 'static>(
-        typed_widget: TW,
-    ) -> Self {
+    pub fn new<TW: TypedWidget<T, B> + 'static>(typed_widget: TW) -> Self {
         WidgetPod {
             widget: Box::new(typed_widget),
             state: WidgetState::default(),
