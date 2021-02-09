@@ -1,12 +1,11 @@
 use std::collections::HashMap;
 
 use crate::{
-    contexts::ContextProvider,
     math::{Size, Vector2},
     Backend, BoxConstraints, CommonPrimitive,
 };
 
-use super::{pod::WidgetPod, TypedWidget, Widget, WidgetExt};
+use super::{pod::WidgetPod, TypedWidget, Widget};
 
 pub struct Flex<T, B: Backend> {
     children: Vec<FlexChild<T, B>>,
@@ -30,28 +29,17 @@ impl<T, B: Backend> Default for Flex<T, B> {
     }
 }
 
-impl<T: 'static, B: Backend + 'static> Flex<T, B> {
-    pub fn add<TW: TypedWidget<T, B> + Widget<T> + 'static>(&mut self, widget: TW)
-    where
-        B: ContextProvider<TW::Context>,
-        B::Primitive: From<TW::Primitive>,
-    {
+impl<T, B: Backend> Flex<T, B> {
+    pub fn add<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW) {
         self.children.push(FlexChild {
-            widget: WidgetPod::new(widget.map_primitive::<B::Primitive>().map_context::<B>()),
+            widget: WidgetPod::new(widget),
             flex_option: FlexOption::NonFlex,
         })
     }
 
-    pub fn add_flex<TW: TypedWidget<T, B> + Widget<T> + 'static>(
-        &mut self,
-        widget: TW,
-        flex_factor: u8,
-    ) where
-        B: ContextProvider<TW::Context>,
-        B::Primitive: From<TW::Primitive>,
-    {
+    pub fn add_flex<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW, flex_factor: u8) {
         self.children.push(FlexChild {
-            widget: WidgetPod::new(widget.map_primitive::<B::Primitive>().map_context::<B>()),
+            widget: WidgetPod::new(widget),
             flex_option: FlexOption::Flex(flex_factor),
         })
     }
