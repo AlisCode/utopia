@@ -2,4 +2,5 @@
 members = [
 	"core",
 	"terminal",
+	"testui_nannou",
 ]

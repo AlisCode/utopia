@@ -1,7 +1,6 @@
 use core::{
     math::Size,
     visitors::{layout::LayoutVisitor, paint::PaintVisitor, Visitor},
-    widgets::WidgetExt,
     BoxConstraints, CommonPrimitive,
 };
 use terminal::{Action, Clear, Retrieved, Value};
@@ -33,14 +32,7 @@ fn main() {
 
     let mut column = Flex::default();
     column.add_flex(text, 1);
-    column.add_flex(
-        Border::new(
-            text_other
-                .map_primitive::<TerminalPrimitive>()
-                .map_context::<TerminalBackend>(),
-        ),
-        1,
-    );
+    column.add_flex(Border::new(text_other), 1);
 
     let mut layout_visitor = LayoutVisitor {
         box_constraints: BoxConstraints {

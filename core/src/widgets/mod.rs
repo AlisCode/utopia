@@ -1,41 +1,33 @@
-use map_context::MapContext;
-use map_primitive::MapPrimitive;
+use border::Border;
 
 use crate::{
-    contexts::ContextProvider,
     math::{Size, Vector2},
     Backend, BoxConstraints,
 };
 
 pub mod border;
 pub mod flex;
-pub mod map_context;
-pub mod map_primitive;
 pub mod pod;
 pub mod text;
 
-pub trait WidgetExt<T>: Widget<T> + Sized {
-    fn map_primitive<P: From<Self::Primitive>>(self) -> MapPrimitive<Self, T, P> {
-        MapPrimitive::new(self)
-    }
-
-    fn map_context<C: ContextProvider<Self::Context>>(self) -> MapContext<Self, T, C> {
-        MapContext::new(self)
-    }
-
+pub trait WidgetExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
     fn boxed(self) -> Box<Self> {
         Box::new(self)
     }
+
+    fn bordered<Color: Default>(self) -> Border<T, Color, B> {
+        Border::new(self)
+    }
 }
 
-impl<W: Widget<T>, T> WidgetExt<T> for W {}
+impl<T, B: Backend, W: TypedWidget<T, B> + 'static> WidgetExt<T, B> for W {}
 
 pub trait Widget<T> {
     type Primitive;
     type Context;
 
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size;
-    fn draw(&self, bounds: Vector2, data: &T) -> Self::Primitive;
+    fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive;
 }
 
 impl<T> Widget<T> for () {
@@ -49,7 +41,7 @@ impl<T> Widget<T> for () {
         }
     }
 
-    fn draw(&self, _bounds: Vector2, _data: &T) -> Self::Primitive {}
+    fn draw(&self, _origin: Vector2, _size: Size, _data: &T) -> Self::Primitive {}
 }
 
 impl<T, W: Widget<T>> Widget<T> for Box<W> {
@@ -60,14 +52,14 @@ impl<T, W: Widget<T>> Widget<T> for Box<W> {
         self.as_mut().layout(bc, context, data)
     }
 
-    fn draw(&self, origin: Vector2, data: &T) -> Self::Primitive {
-        self.as_ref().draw(origin, data)
+    fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {
+        self.as_ref().draw(origin, size, data)
     }
 }
 
 pub trait TypedWidget<T, B: Backend>: sealed::InnerTypedWidget<T, B> {
     fn layout(&mut self, bc: &BoxConstraints, backend: &B, data: &T) -> Size;
-    fn draw(&self, origin: Vector2, data: &T) -> B::Primitive;
+    fn draw(&self, origin: Vector2, size: Size, data: &T) -> B::Primitive;
 }
 
 impl<T, B: Backend, TW> TypedWidget<T, B> for TW
@@ -78,8 +70,8 @@ where
         <Self as sealed::InnerTypedWidget<T, B>>::layout(self, bc, backend, data)
     }
 
-    fn draw(&self, bounds: Vector2, data: &T) -> B::Primitive {
-        <Self as sealed::InnerTypedWidget<T, B>>::draw(self, bounds, data)
+    fn draw(&self, bounds: Vector2, size: Size, data: &T) -> B::Primitive {
+        <Self as sealed::InnerTypedWidget<T, B>>::draw(self, bounds, size, data)
     }
 }
 
@@ -89,7 +81,7 @@ mod sealed {
 
     pub trait InnerTypedWidget<T, B: Backend> {
         fn layout(&mut self, bc: &BoxConstraints, backend: &B, data: &T) -> Size;
-        fn draw(&self, bounds: Vector2, data: &T) -> B::Primitive;
+        fn draw(&self, bounds: Vector2, size: Size, data: &T) -> B::Primitive;
     }
 
     impl<T, W, P, C, B: Backend> InnerTypedWidget<T, B> for W
@@ -103,8 +95,8 @@ mod sealed {
             <Self as Widget<T>>::layout(self, bc, context, data)
         }
 
-        fn draw(&self, bounds: Vector2, data: &T) -> B::Primitive {
-            <Self as Widget<T>>::draw(self, bounds, data).into()
+        fn draw(&self, bounds: Vector2, size: Size, data: &T) -> B::Primitive {
+            <Self as Widget<T>>::draw(self, bounds, size, data).into()
         }
     }
 }

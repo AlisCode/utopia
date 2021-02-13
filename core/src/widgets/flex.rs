@@ -136,11 +136,11 @@ impl<T, B: Backend> Widget<T> for Flex<T, B> {
         Size { width, height }
     }
 
-    fn draw(&self, origin: Vector2, data: &T) -> Self::Primitive {
+    fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {
         let children = self
             .children
             .iter()
-            .map(|flex_child| TypedWidget::<T, B>::draw(&flex_child.widget, origin, data))
+            .map(|flex_child| TypedWidget::<T, B>::draw(&flex_child.widget, origin, size, data))
             .collect();
 
         CommonPrimitive::Group { children }

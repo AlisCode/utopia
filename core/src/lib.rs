@@ -3,6 +3,7 @@ use std::sync::Arc;
 use math::{Size, Vector2};
 
 pub mod contexts;
+pub mod lens;
 pub mod math;
 pub mod visitors;
 pub mod widgets;

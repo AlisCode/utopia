@@ -20,6 +20,17 @@ pub type Flex<T> = core::widgets::flex::Flex<T, TerminalBackend>;
 pub type Text = core::widgets::text::Text<(), Color>;
 pub type Border<T> = core::widgets::border::Border<T, Color, TerminalBackend>;
 
+fn display_blank(
+    terminal: &mut Terminal<Stdout>,
+    origin_x: u16,
+    y: u16,
+    blank_line: &str,
+) -> terminal::error::Result<()> {
+    terminal.batch(Action::MoveCursorTo(origin_x, y))?;
+    terminal.write(blank_line.as_bytes())?;
+    Ok(())
+}
+
 impl TerminalBackend {
     pub fn draw_primitive(&mut self, primitive: TerminalPrimitive) -> terminal::error::Result<()> {
         match primitive {
@@ -40,21 +51,40 @@ impl TerminalBackend {
                 self.terminal.write(text.content.as_bytes())?;
             }
             TerminalPrimitive::Quad(quad) => {
-                let full_line = "+--------+";
-                let blank_line = "|        |";
+                let width = quad.size.width as usize;
+                let height = quad.size.height as usize;
+                if width < 2 || height < 2 {
+                    return Ok(());
+                }
+                let full_line: String = Some('+')
+                    .into_iter()
+                    .chain((0..width - 2).map(|_| '-'))
+                    .chain(Some('+').into_iter())
+                    .collect();
+                let blank_line: String = Some('|')
+                    .into_iter()
+                    .chain((0..width - 2).map(|_| ' '))
+                    .chain(Some('|').into_iter())
+                    .collect();
                 self.terminal.batch(Action::MoveCursorTo(
                     quad.origin.x as u16,
                     quad.origin.y as u16,
                 ))?;
                 self.terminal.write(full_line.as_bytes())?;
+                (0..height - 2)
+                    .into_iter()
+                    .map(|y| {
+                        display_blank(
+                            &mut self.terminal,
+                            quad.origin.x as u16,
+                            quad.origin.y as u16 + 1 + y as u16,
+                            &blank_line,
+                        )
+                    })
+                    .collect::<Result<_, _>>()?;
                 self.terminal.batch(Action::MoveCursorTo(
                     quad.origin.x as u16,
-                    quad.origin.y as u16 + 1,
-                ))?;
-                self.terminal.write(blank_line.as_bytes())?;
-                self.terminal.batch(Action::MoveCursorTo(
-                    quad.origin.x as u16,
-                    quad.origin.y as u16 + 2,
+                    quad.origin.y as u16 + quad.size.height as u16 - 1,
                 ))?;
                 self.terminal.write(full_line.as_bytes())?;
             }
