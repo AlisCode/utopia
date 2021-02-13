@@ -7,6 +7,7 @@ use crate::{
 
 pub mod border;
 pub mod flex;
+pub mod lens;
 pub mod pod;
 pub mod text;
 

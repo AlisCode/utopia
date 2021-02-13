@@ -4,6 +4,7 @@ use core::{
     widgets::{
         border::{Border as BorderWidget, QuadPrimitive},
         flex::Flex as FlexWidget,
+        lens::LensWrap as LensWrapWidget,
         pod::WidgetPod,
         text::Text as TextWidget,
         text::{MeasureBrush, TextPrimitive},
@@ -35,6 +36,7 @@ pub type NannouWidgetPod<T> = WidgetPod<T, NannouBackend>;
 pub type Flex<T> = FlexWidget<T, NannouBackend>;
 pub type Text = TextWidget<Font, Color>;
 pub type Border<T> = BorderWidget<T, Color, NannouBackend>;
+pub type LensWrap<T, U, L> = LensWrapWidget<T, U, L, NannouBackend>;
 
 #[derive(Debug, Clone)]
 pub enum Font {
