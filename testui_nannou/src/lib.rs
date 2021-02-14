@@ -3,9 +3,9 @@ use core::{
     math::Size,
     widgets::{
         border::{Border as BorderWidget, QuadPrimitive},
-        padding::Padding as PaddingWidget,
         flex::Flex as FlexWidget,
         lens::LensWrap as LensWrapWidget,
+        padding::Padding as PaddingWidget,
         pod::WidgetPod,
         text::Text as TextWidget,
         text::{MeasureBrush, TextPrimitive},

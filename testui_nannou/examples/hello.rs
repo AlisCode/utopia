@@ -7,7 +7,7 @@ use std::cell::RefCell;
 
 use nannou::prelude::*;
 use testui_nannou::{
-    Border, Flex, Font, LensWrap, NannouBackend, NannouPrimitive, NannouWidgetPod, Text, Padding
+    Border, Flex, Font, LensWrap, NannouBackend, NannouPrimitive, NannouWidgetPod, Padding, Text,
 };
 
 fn main() {

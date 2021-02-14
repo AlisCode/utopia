@@ -3,7 +3,7 @@ use crate::{
     Backend, BoxConstraints,
 };
 
-use super::{TypedWidget, Widget, pod::WidgetPod};
+use super::{pod::WidgetPod, TypedWidget, Widget};
 
 pub struct Padding<T, B: Backend> {
     widget: WidgetPod<T, B>,
@@ -13,7 +13,7 @@ pub struct Padding<T, B: Backend> {
     padding_bottom: u32,
 }
 
-impl<T, B: Backend> Padding<T,B> {
+impl<T, B: Backend> Padding<T, B> {
     pub fn new<TW: TypedWidget<T, B> + 'static>(widget: TW) -> Self {
         Padding {
             widget: WidgetPod::new(widget),
@@ -52,14 +52,11 @@ impl<T, B: Backend> Widget<T> for Padding<T, B> {
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
         let width = (self.padding_left + self.padding_right) as f32;
         let height = (self.padding_top + self.padding_bottom) as f32;
-        let size = Size {
-            width, 
-            height,
-        };
+        let size = Size { width, height };
         let child_bc = bc.shrink(size);
-        self.widget.set_origin(Vector2 { 
-            x: self.padding_left as f32, 
-            y: self.padding_top as f32 
+        self.widget.set_origin(Vector2 {
+            x: self.padding_left as f32,
+            y: self.padding_top as f32,
         });
         let child_size = TypedWidget::<T, B>::layout(&mut self.widget, &child_bc, context, data);
         Size {
@@ -69,11 +66,6 @@ impl<T, B: Backend> Widget<T> for Padding<T, B> {
     }
 
     fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {
-        TypedWidget::<T, B>::draw(
-            &self.widget,
-            origin,
-            size,
-            data,
-        )
+        TypedWidget::<T, B>::draw(&self.widget, origin, size, data)
     }
 }
