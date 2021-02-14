@@ -3,6 +3,7 @@ use core::{
     math::Size,
     widgets::{
         border::{Border as BorderWidget, QuadPrimitive},
+        padding::Padding as PaddingWidget,
         flex::Flex as FlexWidget,
         lens::LensWrap as LensWrapWidget,
         pod::WidgetPod,
@@ -37,6 +38,7 @@ pub type Flex<T> = FlexWidget<T, NannouBackend>;
 pub type Text = TextWidget<Font, Color>;
 pub type Border<T> = BorderWidget<T, Color, NannouBackend>;
 pub type LensWrap<T, U, L> = LensWrapWidget<T, U, L, NannouBackend>;
+pub type Padding<T> = PaddingWidget<T, NannouBackend>;
 
 #[derive(Debug, Clone)]
 pub enum Font {
@@ -73,6 +75,7 @@ impl NannouPrimitive {
                 if text.content == "" {
                     return;
                 }
+                println!("{:?}", text);
                 let font = text.font.resolve();
                 let v_metrics = font.v_metrics(Scale::uniform(text.font_size as f32));
                 let x = text.origin.x + text.size.width / 2.;
@@ -83,6 +86,7 @@ impl NannouPrimitive {
                     .x_y(x, -y);
             }
             NannouPrimitive::Quad(quad) => {
+                println!("{:?}", quad);
                 draw.rect()
                     .x_y(
                         quad.origin.x + quad.size.width / 2.,

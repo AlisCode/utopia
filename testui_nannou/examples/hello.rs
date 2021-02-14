@@ -7,7 +7,7 @@ use std::cell::RefCell;
 
 use nannou::prelude::*;
 use testui_nannou::{
-    Border, Flex, Font, LensWrap, NannouBackend, NannouPrimitive, NannouWidgetPod, Text,
+    Border, Flex, Font, LensWrap, NannouBackend, NannouPrimitive, NannouWidgetPod, Text, Padding
 };
 
 fn main() {
@@ -57,6 +57,8 @@ fn model(_app: &App) -> AppState<MyState> {
         font_size: 16,
         color: nannou::color::RED,
     };
+    let text_other = Padding::new(text_other).top(5).left(5);
+    let text_other = Border::new(text_other).border_width(5);
 
     let lens_name = core::lens!(MyState, name);
     let lens_name_other = core::lens!(MyState, other_name);
