@@ -7,7 +7,7 @@ use std::cell::RefCell;
 
 use nannou::prelude::*;
 use testui_nannou::{
-    Border, Flex, Font, LensWrap, NannouBackend, NannouPrimitive, NannouWidgetPod, Padding, Text,
+    Align, Border, Flex, Font, LensWrap, NannouBackend, NannouPrimitive, NannouWidgetPod, Padding, Text,
 };
 
 fn main() {
@@ -39,7 +39,7 @@ fn view(app: &App, model: &AppState<MyState>, frame: Frame) {
     let size = app.window_rect();
     let draw = app
         .draw()
-        .translate(Vector3::new(-size.w() / 2., size.h() / 2., 0.));
+        .translate(Vector3::new(-size.w() / 2., -size.h() / 2., 0.));
     draw.background().color(nannou::color::PLUM);
     primitive.draw(&draw);
     draw.to_frame(app, &frame)
@@ -67,6 +67,8 @@ fn model(_app: &App) -> AppState<MyState> {
     flex.add(LensWrap::new(Border::new(text).border_width(10), lens_name));
     flex.add(LensWrap::new(text_other, lens_name_other));
 
+    let centered = Align::new(flex);
+
     let state = MyState {
         name: "Test Nannou".to_string(),
         other_name: "My name".to_string(),
@@ -75,7 +77,7 @@ fn model(_app: &App) -> AppState<MyState> {
     AppState {
         backend: NannouBackend::default(),
         state,
-        widget: RefCell::new(NannouWidgetPod::new(flex)),
+        widget: RefCell::new(NannouWidgetPod::new(centered)),
         widget_size: None,
     }
 }

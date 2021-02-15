@@ -5,6 +5,7 @@ use crate::{
     Backend, BoxConstraints,
 };
 
+pub mod align;
 pub mod border;
 pub mod flex;
 pub mod lens;

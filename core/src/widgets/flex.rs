@@ -133,7 +133,7 @@ impl<T, B: Backend> Widget<T> for Flex<T, B> {
                 position.x += size.width;
             });
 
-        Size { width, height }
+        Size { width: position.x, height }
     }
 
     fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {

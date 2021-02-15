@@ -15,6 +15,7 @@ pub struct TerminalBackend {
     pub terminal: Terminal<Stdout>,
 }
 
+pub type Align<T> = core::widgets::align::Align<T, TerminalBackend>;
 pub type Color = ();
 pub type Flex<T> = core::widgets::flex::Flex<T, TerminalBackend>;
 pub type Text = core::widgets::text::Text<(), Color>;

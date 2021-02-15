@@ -4,7 +4,7 @@ use core::{
     BoxConstraints, CommonPrimitive,
 };
 use terminal::{Action, Clear, Retrieved, Value};
-use tui::{Border, Flex, TerminalBackend, TerminalPrimitive, Text};
+use tui::{Align, Border, Flex, TerminalBackend, TerminalPrimitive, Text};
 
 fn main() {
     let mut backend = TerminalBackend::default();
@@ -31,8 +31,10 @@ fn main() {
     };
 
     let mut column = Flex::default();
-    column.add_flex(text, 1);
-    column.add_flex(Border::new(text_other), 1);
+    column.add(text);
+    column.add(Border::new(text_other));
+
+    let mut column = Align::new(column);
 
     let mut layout_visitor = LayoutVisitor {
         box_constraints: BoxConstraints {

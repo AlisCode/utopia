@@ -2,6 +2,7 @@ use core::{
     contexts::ContextProvider,
     math::Size,
     widgets::{
+        align::Align as AlignWidget,
         border::{Border as BorderWidget, QuadPrimitive},
         flex::Flex as FlexWidget,
         lens::LensWrap as LensWrapWidget,
@@ -32,6 +33,7 @@ impl Default for NannouBackend {
     }
 }
 
+pub type Align<T> = AlignWidget<T, NannouBackend>;
 pub type Color = nannou::color::Srgb<u8>;
 pub type NannouWidgetPod<T> = WidgetPod<T, NannouBackend>;
 pub type Flex<T> = FlexWidget<T, NannouBackend>;
@@ -72,10 +74,10 @@ impl NannouPrimitive {
                 _ => {}
             },
             NannouPrimitive::Text(text) => {
+                println!("{:?}", text);
                 if text.content == "" {
                     return;
                 }
-                println!("{:?}", text);
                 let font = text.font.resolve();
                 let v_metrics = font.v_metrics(Scale::uniform(text.font_size as f32));
                 let x = text.origin.x + text.size.width / 2.;
@@ -83,18 +85,18 @@ impl NannouPrimitive {
                 draw.text(&text.content)
                     .color(text.color)
                     .font_size(text.font_size as u32)
-                    .x_y(x, -y);
+                    .x_y(x, y);
             }
             NannouPrimitive::Quad(quad) => {
                 println!("{:?}", quad);
                 draw.rect()
                     .x_y(
-                        quad.origin.x + quad.size.width / 2.,
-                        quad.origin.y - quad.size.height / 2.,
+                        quad.origin.x + quad.size.width / 2. + quad.border_width as f32 * 2.,
+                        quad.origin.y + quad.size.height / 2. + quad.border_width as f32 * 2.,
                     )
                     .w_h(
-                        quad.size.width - quad.border_width as f32,
-                        quad.size.height - quad.border_width as f32,
+                        quad.size.width + quad.border_width as f32 * 2.,
+                        quad.size.height/2. + quad.border_width as f32 * 2.,
                     )
                     .no_fill()
                     .stroke_weight(quad.border_width as f32)
