@@ -43,6 +43,14 @@ impl<T, B: Backend> Padding<T, B> {
         self.padding_right = padding_right;
         self
     }
+
+    pub fn all(mut self, padding: u32) -> Self {
+        self.padding_bottom = padding;
+        self.padding_left = padding;
+        self.padding_right = padding;
+        self.padding_top = padding;
+        self
+    }
 }
 
 impl<T, B: Backend> Widget<T> for Padding<T, B> {
