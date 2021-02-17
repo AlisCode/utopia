@@ -65,16 +65,15 @@ pub enum NannouPrimitive {
 }
 
 impl NannouPrimitive {
-    pub fn draw(self, draw: &Draw) {
+    pub fn draw(self, draw: &Draw, win_height: f32) {
         match self {
             NannouPrimitive::Common(common) => match common {
-                CommonPrimitive::Group { children } => {
-                    children.into_iter().for_each(|prim| prim.draw(draw))
-                }
+                CommonPrimitive::Group { children } => children
+                    .into_iter()
+                    .for_each(|prim| prim.draw(draw, win_height)),
                 _ => {}
             },
             NannouPrimitive::Text(text) => {
-                println!("{:?}", text);
                 if text.content == "" {
                     return;
                 }
@@ -85,18 +84,16 @@ impl NannouPrimitive {
                 draw.text(&text.content)
                     .color(text.color)
                     .font_size(text.font_size as u32)
-                    .x_y(x, y);
+                    .x_y(x, win_height - y);
             }
             NannouPrimitive::Quad(quad) => {
-                println!("{:?}", quad);
+                let x = quad.origin.x + quad.size.width / 2.;
+                let y = quad.origin.y + quad.size.height / 2.;
                 draw.rect()
-                    .x_y(
-                        quad.origin.x + quad.size.width / 2. + quad.border_width as f32 * 2.,
-                        quad.origin.y + quad.size.height / 2. + quad.border_width as f32 * 2.,
-                    )
+                    .x_y(x, win_height - y)
                     .w_h(
-                        quad.size.width + quad.border_width as f32 * 2.,
-                        quad.size.height/2. + quad.border_width as f32 * 2.,
+                        (quad.size.width - quad.border_width as f32 / 2.).ceil(),
+                        (quad.size.height - quad.border_width as f32 / 2.).ceil(),
                     )
                     .no_fill()
                     .stroke_weight(quad.border_width as f32)

@@ -7,7 +7,8 @@ use std::cell::RefCell;
 
 use nannou::prelude::*;
 use testui_nannou::{
-    Align, Border, Flex, Font, LensWrap, NannouBackend, NannouPrimitive, NannouWidgetPod, Padding, Text,
+    Align, Border, Flex, Font, LensWrap, NannouBackend, NannouPrimitive, NannouWidgetPod, Padding,
+    Text,
 };
 
 fn main() {
@@ -41,7 +42,7 @@ fn view(app: &App, model: &AppState<MyState>, frame: Frame) {
         .draw()
         .translate(Vector3::new(-size.w() / 2., -size.h() / 2., 0.));
     draw.background().color(nannou::color::PLUM);
-    primitive.draw(&draw);
+    primitive.draw(&draw, size.h());
     draw.to_frame(app, &frame)
         .expect("Failed to write to frame");
 }
@@ -57,14 +58,14 @@ fn model(_app: &App) -> AppState<MyState> {
         font_size: 16,
         color: nannou::color::RED,
     };
-    let text_other = Padding::new(text_other).top(5).left(5);
+    let text_other = Padding::new(text_other).all(5);
     let text_other = Border::new(text_other).border_width(5);
 
     let lens_name = core::lens!(MyState, name);
     let lens_name_other = core::lens!(MyState, other_name);
 
     let mut flex = Flex::default();
-    flex.add(LensWrap::new(Border::new(text).border_width(10), lens_name));
+    flex.add(LensWrap::new(Border::new(text).border_width(5), lens_name));
     flex.add(LensWrap::new(text_other, lens_name_other));
 
     let centered = Align::new(flex);
