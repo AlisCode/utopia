@@ -135,6 +135,8 @@ where
 
 impl Backend for NannouBackend {
     type Primitive = NannouPrimitive;
+    type Event = ();
+    type EventReaction = ();
 }
 
 fn measure(contents: &str, font: Font, size: u16) -> Size {

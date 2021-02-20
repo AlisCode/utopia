@@ -3,6 +3,7 @@ use std::sync::Arc;
 use math::{Size, Vector2};
 
 pub mod contexts;
+pub mod controllers;
 pub mod lens;
 pub mod math;
 pub mod visitors;
@@ -82,4 +83,6 @@ impl<P> From<P> for CommonPrimitive<P> {
 
 pub trait Backend {
     type Primitive: From<CommonPrimitive<Self::Primitive>>;
+    type Event;
+    type EventReaction;
 }

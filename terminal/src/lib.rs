@@ -175,4 +175,6 @@ impl From<TextPrimitive<(), Color>> for TerminalPrimitive {
 
 impl Backend for TerminalBackend {
     type Primitive = TerminalPrimitive;
+    type Event = ();
+    type EventReaction = ();
 }
