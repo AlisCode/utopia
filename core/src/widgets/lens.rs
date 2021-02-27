@@ -25,6 +25,8 @@ impl<T, U, L: Lens<T, U>, B: Backend> LensWrap<T, U, L, B> {
 impl<T, U, L: Lens<T, U>, B: Backend> Widget<T> for LensWrap<T, U, L, B> {
     type Primitive = B::Primitive;
     type Context = B;
+    type Event = B::Event;
+    type Reaction = B::EventReaction;
 
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
         let widget = &mut self.widget;

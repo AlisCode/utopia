@@ -1,7 +1,7 @@
-use crate::{Backend, BoxConstraints};
-use crate::widgets::pod::WidgetPod;
-use crate::widgets::{Widget, TypedWidget};
 use crate::math::{Size, Vector2};
+use crate::widgets::pod::WidgetPod;
+use crate::widgets::{TypedWidget, Widget};
+use crate::{Backend, BoxConstraints};
 
 pub struct Align<T, B: Backend> {
     widget: WidgetPod<T, B>,
@@ -11,9 +11,9 @@ pub struct Align<T, B: Backend> {
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 pub enum VerticalAlignment {
-    Top, 
+    Top,
     Center,
-    Bottom
+    Bottom,
 }
 
 impl Default for VerticalAlignment {
@@ -24,11 +24,10 @@ impl Default for VerticalAlignment {
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 pub enum HorizontalAlignment {
-    Left, 
-    Center, 
-    Right
+    Left,
+    Center,
+    Right,
 }
-
 
 impl Default for HorizontalAlignment {
     fn default() -> Self {
@@ -49,33 +48,24 @@ impl<T, B: Backend> Align<T, B> {
 impl<T, B: Backend> Widget<T> for Align<T, B> {
     type Primitive = B::Primitive;
     type Context = B;
+    type Event = B::Event;
+    type Reaction = B::EventReaction;
 
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
         let child_size = TypedWidget::<T, B>::layout(&mut self.widget, bc, context, data);
 
         let left = match self.horizontal {
             HorizontalAlignment::Left => 0.,
-            HorizontalAlignment::Center => {
-                bc.max.width / 2. - child_size.width / 2.
-            } 
-            HorizontalAlignment::Right => {
-                bc.max.width - child_size.width
-            }
+            HorizontalAlignment::Center => bc.max.width / 2. - child_size.width / 2.,
+            HorizontalAlignment::Right => bc.max.width - child_size.width,
         };
         let top = match self.vertical {
             VerticalAlignment::Top => 0.,
-            VerticalAlignment::Center => {
-                bc.max.height / 2. - child_size.height / 2.
-            }
-            VerticalAlignment::Bottom => {
-                bc.max.height - child_size.height
-            }
+            VerticalAlignment::Center => bc.max.height / 2. - child_size.height / 2.,
+            VerticalAlignment::Bottom => bc.max.height - child_size.height,
         };
 
-        self.widget.set_origin(Vector2 {
-            x: left,
-            y: top,
-        });
+        self.widget.set_origin(Vector2 { x: left, y: top });
 
         Size {
             width: bc.max.width,

@@ -48,6 +48,8 @@ impl<T, B: Backend> Flex<T, B> {
 impl<T, B: Backend> Widget<T> for Flex<T, B> {
     type Primitive = CommonPrimitive<B::Primitive>;
     type Context = B;
+    type Event = B::Event;
+    type Reaction = B::EventReaction;
 
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
         // Step 1 : Layout inflexible children
@@ -133,7 +135,10 @@ impl<T, B: Backend> Widget<T> for Flex<T, B> {
                 position.x += size.width;
             });
 
-        Size { width: position.x, height }
+        Size {
+            width: position.x,
+            height,
+        }
     }
 
     fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {

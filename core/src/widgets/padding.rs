@@ -56,6 +56,8 @@ impl<T, B: Backend> Padding<T, B> {
 impl<T, B: Backend> Widget<T> for Padding<T, B> {
     type Primitive = B::Primitive;
     type Context = B;
+    type Event = B::Event;
+    type Reaction = B::EventReaction;
 
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
         let width = (self.padding_left + self.padding_right) as f32;

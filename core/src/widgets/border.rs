@@ -57,6 +57,8 @@ pub struct QuadPrimitive<Color> {
 impl<T, Color: Clone, B: Backend> Widget<T> for Border<T, Color, B> {
     type Primitive = (QuadPrimitive<Color>, B::Primitive);
     type Context = B;
+    type Event = B::Event;
+    type Reaction = B::EventReaction;
 
     fn layout(
         &mut self,

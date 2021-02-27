@@ -27,6 +27,8 @@ pub struct MeasureBrush<Font> {
 impl<Font: Clone, Color: Clone> Widget<String> for Text<Font, Color> {
     type Primitive = TextPrimitive<Font, Color>;
     type Context = MeasureBrush<Font>;
+    type Event = ();
+    type Reaction = ();
 
     fn layout(
         &mut self,

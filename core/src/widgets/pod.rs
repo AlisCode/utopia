@@ -30,6 +30,8 @@ impl<T, B: Backend> WidgetPod<T, B> {
 impl<T, B: Backend> Widget<T> for WidgetPod<T, B> {
     type Primitive = B::Primitive;
     type Context = B;
+    type Event = B::Event;
+    type Reaction = B::EventReaction;
 
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
         let size = TypedWidget::<T, B>::layout(self.widget.as_mut(), bc, context, data);
