@@ -26,7 +26,20 @@ impl<T, W: TypedWidget<T, B> + Widget<T>, C: TypedController<T, W, B>, B: Backen
         TypedWidget::<T, B>::draw(&self.widget, origin, size, data)
     }
 
-    fn event(&mut self, data: &mut T, event: &Self::Event) -> Option<Self::Reaction> {
-        TypedController::<T, W, B>::event(&mut self.controller, &mut self.widget, data, event)
+    fn event(
+        &mut self,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &Self::Event,
+    ) -> Option<Self::Reaction> {
+        TypedController::<T, W, B>::event(
+            &mut self.controller,
+            &mut self.widget,
+            origin,
+            size,
+            data,
+            event,
+        )
     }
 }

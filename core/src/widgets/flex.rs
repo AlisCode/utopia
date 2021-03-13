@@ -151,11 +151,17 @@ impl<T, B: Backend> Widget<T> for Flex<T, B> {
         CommonPrimitive::Group { children }
     }
 
-    fn event(&mut self, data: &mut T, event: &Self::Event) -> Option<Self::Reaction> {
+    fn event(
+        &mut self,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &Self::Event,
+    ) -> Option<Self::Reaction> {
         self.children
             .iter_mut()
             .filter_map(|flex_child| {
-                TypedWidget::<T, B>::event(&mut flex_child.widget, data, event)
+                TypedWidget::<T, B>::event(&mut flex_child.widget, origin, size, data, event)
             })
             .next()
     }

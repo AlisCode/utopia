@@ -20,6 +20,13 @@ impl Size {
         Size { width, height }
     }
 
+    pub fn contains(&self, position: Vector2) -> bool {
+        position.x <= self.width
+            && position.x >= 0.
+            && position.y <= self.height
+            && position.y >= 0.
+    }
+
     #[inline]
     pub fn expand(self) -> Size {
         Size::new(self.width.expand(), self.height.expand())
@@ -57,6 +64,17 @@ impl std::ops::Add<Vector2> for Vector2 {
         Vector2 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
+        }
+    }
+}
+
+impl std::ops::Sub<Vector2> for Vector2 {
+    type Output = Vector2;
+
+    fn sub(self, rhs: Vector2) -> Self::Output {
+        Vector2 {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
         }
     }
 }

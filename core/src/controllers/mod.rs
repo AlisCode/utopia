@@ -1,16 +1,24 @@
 use crate::{
+    math::{Size, Vector2},
     widgets::{TypedWidget, Widget},
     Backend,
 };
 
 pub mod click;
 
+/// A Controller is a bit of logic that reacts to a specific Event type.
 pub trait Controller<T, W: Widget<T>> {
     type Event;
     type Reaction;
 
-    fn event(&mut self, child: &mut W, data: &mut T, event: &Self::Event)
-        -> Option<Self::Reaction>;
+    fn event(
+        &mut self,
+        child: &mut W,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &Self::Event,
+    ) -> Option<Self::Reaction>;
 }
 
 impl<T, W: Widget<T>, C: Controller<T, W>> Controller<T, W> for Box<C> {
@@ -20,31 +28,48 @@ impl<T, W: Widget<T>, C: Controller<T, W>> Controller<T, W> for Box<C> {
     fn event(
         &mut self,
         child: &mut W,
+        origin: Vector2,
+        size: Size,
         data: &mut T,
         event: &Self::Event,
     ) -> Option<Self::Reaction> {
-        self.as_mut().event(child, data, event)
+        self.as_mut().event(child, origin, size, data, event)
     }
 }
 
 pub trait TypedController<T, W: TypedWidget<T, B>, B: Backend>:
     sealed::InnerTypedController<T, W, B>
 {
-    fn event(&mut self, child: &mut W, data: &mut T, event: &B::Event) -> Option<B::EventReaction>;
+    fn event(
+        &mut self,
+        child: &mut W,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &B::Event,
+    ) -> Option<B::EventReaction>;
 }
 
 impl<T, W: TypedWidget<T, B>, B: Backend, C> TypedController<T, W, B> for C
 where
     C: sealed::InnerTypedController<T, W, B>,
 {
-    fn event(&mut self, child: &mut W, data: &mut T, event: &B::Event) -> Option<B::EventReaction> {
-        sealed::InnerTypedController::<T, W, B>::event(self, child, data, event)
+    fn event(
+        &mut self,
+        child: &mut W,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &B::Event,
+    ) -> Option<B::EventReaction> {
+        sealed::InnerTypedController::<T, W, B>::event(self, child, origin, size, data, event)
     }
 }
 
 mod sealed {
     use super::{Controller, TransformEvent};
     use crate::{
+        math::{Size, Vector2},
         widgets::{TypedWidget, Widget},
         Backend,
     };
@@ -53,6 +78,8 @@ mod sealed {
         fn event(
             &mut self,
             child: &mut W,
+            origin: Vector2,
+            size: Size,
             data: &mut T,
             event: &B::Event,
         ) -> Option<B::EventReaction>;
@@ -67,11 +94,14 @@ mod sealed {
         fn event(
             &mut self,
             child: &mut W,
+            origin: Vector2,
+            size: Size,
             data: &mut T,
             event: &B::Event,
         ) -> Option<B::EventReaction> {
             event.transform_event().and_then(|event| {
-                Controller::event(self, child, data, event).map(|reaction| reaction.into())
+                Controller::event(self, child, origin, size, data, event)
+                    .map(|reaction| reaction.into())
             })
         }
     }

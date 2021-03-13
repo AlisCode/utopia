@@ -1,4 +1,7 @@
-use crate::{math::Vector2, widgets::Widget};
+use crate::{
+    math::{Size, Vector2},
+    widgets::Widget,
+};
 
 use super::Controller;
 
@@ -35,9 +38,16 @@ impl<T, W: Widget<T>> Controller<T, W> for Click<T> {
     fn event(
         &mut self,
         _child: &mut W,
+        origin: Vector2,
+        size: Size,
         data: &mut T,
         event: &Self::Event,
     ) -> Option<Self::Reaction> {
+        let target = event.pos - origin;
+        if !size.contains(target) {
+            return None;
+        }
+
         match event.mouse_button {
             MouseButton::Left => (self.callback)(data),
             _ => (),

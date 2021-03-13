@@ -33,7 +33,13 @@ pub trait Widget<T> {
     type Reaction;
 
     fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive;
-    fn event(&mut self, _data: &mut T, _event: &Self::Event) -> Option<Self::Reaction> {
+    fn event(
+        &mut self,
+        _origin: Vector2,
+        _size: Size,
+        _data: &mut T,
+        _event: &Self::Event,
+    ) -> Option<Self::Reaction> {
         None
     }
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size;
@@ -65,8 +71,14 @@ impl<T, W: Widget<T>> Widget<T> for Box<W> {
         self.as_mut().layout(bc, context, data)
     }
 
-    fn event(&mut self, data: &mut T, event: &Self::Event) -> Option<Self::Reaction> {
-        self.as_mut().event(data, event)
+    fn event(
+        &mut self,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &Self::Event,
+    ) -> Option<Self::Reaction> {
+        self.as_mut().event(origin, size, data, event)
     }
 
     fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {
@@ -76,7 +88,13 @@ impl<T, W: Widget<T>> Widget<T> for Box<W> {
 
 pub trait TypedWidget<T, B: Backend>: sealed::InnerTypedWidget<T, B> {
     fn draw(&self, origin: Vector2, size: Size, data: &T) -> B::Primitive;
-    fn event(&mut self, data: &mut T, event: &B::Event) -> Option<B::EventReaction>;
+    fn event(
+        &mut self,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &B::Event,
+    ) -> Option<B::EventReaction>;
     fn layout(&mut self, bc: &BoxConstraints, backend: &B, data: &T) -> Size;
 }
 
@@ -88,8 +106,14 @@ where
         <Self as sealed::InnerTypedWidget<T, B>>::layout(self, bc, backend, data)
     }
 
-    fn event(&mut self, data: &mut T, event: &B::Event) -> Option<B::EventReaction> {
-        <Self as sealed::InnerTypedWidget<T, B>>::event(self, data, event)
+    fn event(
+        &mut self,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &B::Event,
+    ) -> Option<B::EventReaction> {
+        <Self as sealed::InnerTypedWidget<T, B>>::event(self, origin, size, data, event)
     }
 
     fn draw(&self, bounds: Vector2, size: Size, data: &T) -> B::Primitive {
@@ -106,7 +130,13 @@ mod sealed {
 
     pub trait InnerTypedWidget<T, B: Backend> {
         fn draw(&self, bounds: Vector2, size: Size, data: &T) -> B::Primitive;
-        fn event(&mut self, data: &mut T, event: &B::Event) -> Option<B::EventReaction>;
+        fn event(
+            &mut self,
+            origin: Vector2,
+            size: Size,
+            data: &mut T,
+            event: &B::Event,
+        ) -> Option<B::EventReaction>;
         fn layout(&mut self, bc: &BoxConstraints, backend: &B, data: &T) -> Size;
     }
 
@@ -123,9 +153,16 @@ mod sealed {
             <Self as Widget<T>>::layout(self, bc, context, data)
         }
 
-        fn event(&mut self, data: &mut T, event: &B::Event) -> Option<B::EventReaction> {
+        fn event(
+            &mut self,
+            origin: Vector2,
+            size: Size,
+            data: &mut T,
+            event: &B::Event,
+        ) -> Option<B::EventReaction> {
             event.transform_event().and_then(|event| {
-                <Self as Widget<T>>::event(self, data, event).map(|reaction| reaction.into())
+                <Self as Widget<T>>::event(self, origin, size, data, event)
+                    .map(|reaction| reaction.into())
             })
         }
 

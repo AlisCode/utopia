@@ -93,7 +93,13 @@ impl<T, Color: Clone, B: Backend> Widget<T> for Border<T, Color, B> {
         (quad, inner)
     }
 
-    fn event(&mut self, data: &mut T, event: &Self::Event) -> Option<Self::Reaction> {
-        TypedWidget::<T, B>::event(&mut self.widget, data, event)
+    fn event(
+        &mut self,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &Self::Event,
+    ) -> Option<Self::Reaction> {
+        TypedWidget::<T, B>::event(&mut self.widget, origin, size, data, event)
     }
 }

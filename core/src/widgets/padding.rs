@@ -79,7 +79,13 @@ impl<T, B: Backend> Widget<T> for Padding<T, B> {
         TypedWidget::<T, B>::draw(&self.widget, origin, size, data)
     }
 
-    fn event(&mut self, data: &mut T, event: &Self::Event) -> Option<Self::Reaction> {
-        TypedWidget::<T, B>::event(&mut self.widget, data, event)
+    fn event(
+        &mut self,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: &Self::Event,
+    ) -> Option<Self::Reaction> {
+        TypedWidget::<T, B>::event(&mut self.widget, origin, size, data, event)
     }
 }
