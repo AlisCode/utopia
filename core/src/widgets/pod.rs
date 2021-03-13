@@ -47,6 +47,10 @@ impl<T, B: Backend> Widget<T> for WidgetPod<T, B> {
             data,
         )
     }
+
+    fn event(&mut self, data: &mut T, event: &Self::Event) -> Option<Self::Reaction> {
+        TypedWidget::<T, B>::event(self.widget.as_mut(), data, event)
+    }
 }
 
 #[derive(Debug, Default)]

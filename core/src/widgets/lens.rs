@@ -40,4 +40,10 @@ impl<T, U, L: Lens<T, U>, B: Backend> Widget<T> for LensWrap<T, U, L, B> {
             TypedWidget::<U, B>::draw(&self.widget, origin, size, data)
         })
     }
+
+    fn event(&mut self, data: &mut T, event: &Self::Event) -> Option<Self::Reaction> {
+        let widget = &mut self.widget;
+        self.lens
+            .with_mut(data, |data| TypedWidget::<U, B>::event(widget, data, event))
+    }
 }
