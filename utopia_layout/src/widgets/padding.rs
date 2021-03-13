@@ -1,9 +1,8 @@
-use crate::{
+use utopia_core::{
     math::{Size, Vector2},
+    widgets::{pod::WidgetPod, TypedWidget, Widget},
     Backend, BoxConstraints,
 };
-
-use super::{pod::WidgetPod, TypedWidget, Widget};
 
 pub struct Padding<T, B: Backend> {
     widget: WidgetPod<T, B>,

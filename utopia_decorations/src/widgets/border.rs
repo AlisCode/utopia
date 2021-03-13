@@ -1,9 +1,10 @@
-use crate::{
+use utopia_core::{
     math::{Size, Vector2},
-    Backend,
+    widgets::{pod::WidgetPod, TypedWidget, Widget},
+    Backend, BoxConstraints,
 };
 
-use super::{pod::WidgetPod, TypedWidget, Widget};
+use crate::primitives::quad::QuadPrimitive;
 
 pub struct Border<T, Color, B: Backend> {
     pub border_color: Color,
@@ -45,27 +46,13 @@ impl<T, Color: Default, B: Backend> Border<T, Color, B> {
     }
 }
 
-#[derive(Debug)]
-pub struct QuadPrimitive<Color> {
-    pub border_color: Color,
-    pub border_radius: u32,
-    pub border_width: u32,
-    pub origin: Vector2,
-    pub size: Size,
-}
-
 impl<T, Color: Clone, B: Backend> Widget<T> for Border<T, Color, B> {
     type Primitive = (QuadPrimitive<Color>, B::Primitive);
     type Context = B;
     type Event = B::Event;
     type Reaction = B::EventReaction;
 
-    fn layout(
-        &mut self,
-        bc: &crate::BoxConstraints,
-        context: &Self::Context,
-        data: &T,
-    ) -> crate::math::Size {
+    fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
         let border_width = self.border_width as f32;
         let double_border_width = border_width * 2.;
         let child_bc = bc.shrink((double_border_width, double_border_width));

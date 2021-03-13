@@ -1,6 +1,9 @@
 [workspace]
 members = [
 	"utopia_core",
-	"utopia_tui",
+	"utopia_decorations",
+	"utopia_layout",
 	"utopia_nannou",
+	"utopia_text",
+	"utopia_tui",
 ]

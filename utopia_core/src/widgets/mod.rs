@@ -1,26 +1,15 @@
-use border::Border;
-
 use crate::{
     math::{Size, Vector2},
     Backend, BoxConstraints,
 };
 
-pub mod align;
-pub mod border;
 pub mod controlled;
-pub mod flex;
 pub mod lens;
-pub mod padding;
 pub mod pod;
-pub mod text;
 
 pub trait WidgetExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
     fn boxed(self) -> Box<Self> {
         Box::new(self)
-    }
-
-    fn bordered<Color: Default>(self) -> Border<T, Color, B> {
-        Border::new(self)
     }
 }
 

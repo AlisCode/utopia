@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 
-use crate::{
+use utopia_core::{
     math::{Size, Vector2},
     Backend, BoxConstraints, CommonPrimitive,
 };
 
-use super::{pod::WidgetPod, TypedWidget, Widget};
+use utopia_core::widgets::{pod::WidgetPod, TypedWidget, Widget};
 
+/// A Widget that implements a Flex layout algorithm.
 pub struct Flex<T, B: Backend> {
     children: Vec<FlexChild<T, B>>,
     computed_sizes: Vec<Size>,

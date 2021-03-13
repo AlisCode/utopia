@@ -1,25 +1,26 @@
+use nannou::{
+    geom::rect::Rect,
+    text::{Builder as TextBuilder, Scale},
+    Draw,
+};
 use utopia_core::{
     contexts::ContextProvider,
     controllers::{click::MouseClickEvent, TransformEvent},
     math::Size,
     widgets::{
-        align::Align as AlignWidget,
-        border::{Border as BorderWidget, QuadPrimitive},
-        controlled::Controlled as ControlledWidget,
-        flex::Flex as FlexWidget,
-        lens::LensWrap as LensWrapWidget,
-        padding::Padding as PaddingWidget,
+        controlled::Controlled as ControlledWidget, lens::LensWrap as LensWrapWidget,
         pod::WidgetPod,
-        text::Text as TextWidget,
-        text::{MeasureBrush, TextPrimitive},
     },
     Backend, CommonPrimitive,
 };
-
-use nannou::{
-    geom::rect::Rect,
-    text::{Builder as TextBuilder, Scale},
-    Draw,
+use utopia_decorations::{
+    primitives::quad::QuadPrimitive, widgets::border::Border as BorderWidget,
+};
+use utopia_layout::widgets::{
+    align::Align as AlignWidget, flex::Flex as FlexWidget, padding::Padding as PaddingWidget,
+};
+use utopia_text::{
+    context::MeasureBrush, primitives::text::TextPrimitive, widgets::text::Text as TextWidget,
 };
 
 pub struct NannouBackend {

@@ -1,25 +1,18 @@
 use std::io::{Stdout, Write};
-use utopia_core::{
-    contexts::ContextProvider,
-    math::Size,
-    widgets::{
-        border::QuadPrimitive,
-        text::{MeasureBrush, TextPrimitive},
-    },
-    Backend, CommonPrimitive,
-};
-
 use terminal::{Action, Clear, Terminal};
+use utopia_core::{contexts::ContextProvider, math::Size, Backend, CommonPrimitive};
+use utopia_decorations::primitives::quad::QuadPrimitive;
+use utopia_text::{context::MeasureBrush, primitives::text::TextPrimitive};
 pub struct TerminalBackend {
     measure_brush: MeasureBrush<()>,
     pub terminal: Terminal<Stdout>,
 }
 
-pub type Align<T> = utopia_core::widgets::align::Align<T, TerminalBackend>;
+pub type Align<T> = utopia_layout::widgets::align::Align<T, TerminalBackend>;
 pub type Color = ();
-pub type Flex<T> = utopia_core::widgets::flex::Flex<T, TerminalBackend>;
-pub type Text = utopia_core::widgets::text::Text<(), Color>;
-pub type Border<T> = utopia_core::widgets::border::Border<T, Color, TerminalBackend>;
+pub type Flex<T> = utopia_layout::widgets::flex::Flex<T, TerminalBackend>;
+pub type Text = utopia_text::widgets::text::Text<(), Color>;
+pub type Border<T> = utopia_decorations::widgets::border::Border<T, Color, TerminalBackend>;
 
 fn display_blank(
     terminal: &mut Terminal<Stdout>,

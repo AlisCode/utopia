@@ -8,4 +8,7 @@ edition = "2018"
 
 [dependencies]
 utopia_core = { path = "../utopia_core" }
+utopia_decorations = { path = "../utopia_decorations" }
+utopia_layout = { path = "../utopia_layout" }
+utopia_text = { path = "../utopia_text" }
 terminal = "0.2.1"

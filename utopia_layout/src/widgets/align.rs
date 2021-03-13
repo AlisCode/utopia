@@ -1,8 +1,11 @@
-use crate::math::{Size, Vector2};
-use crate::widgets::pod::WidgetPod;
-use crate::widgets::{TypedWidget, Widget};
-use crate::{Backend, BoxConstraints};
+use utopia_core::math::{Size, Vector2};
+use utopia_core::widgets::pod::WidgetPod;
+use utopia_core::widgets::{TypedWidget, Widget};
+use utopia_core::{Backend, BoxConstraints};
 
+/// A Widget that fills its parent.
+///  
+/// Will align the inner child following the given arguments
 pub struct Align<T, B: Backend> {
     widget: WidgetPod<T, B>,
     vertical: VerticalAlignment,
@@ -42,6 +45,16 @@ impl<T, B: Backend> Align<T, B> {
             vertical: VerticalAlignment::default(),
             horizontal: HorizontalAlignment::default(),
         }
+    }
+
+    pub fn horizontal(mut self, horizontal_alignment: HorizontalAlignment) -> Self {
+        self.horizontal = horizontal_alignment;
+        self
+    }
+
+    pub fn vertical(mut self, vertical_alignment: VerticalAlignment) -> Self {
+        self.vertical = vertical_alignment;
+        self
     }
 }
 
