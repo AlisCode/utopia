@@ -1,6 +1,6 @@
 [workspace]
 members = [
-	"core",
-	"terminal",
-	"testui_nannou",
+	"utopia_core",
+	"utopia_tui",
+	"utopia_nannou",
 ]

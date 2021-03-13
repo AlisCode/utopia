@@ -1,5 +1,5 @@
 [package]
-name = "testui_nannou"
+name = "utopia_nannou"
 version = "0.1.0"
 authors = ["Olivier Pinon <oliv.pinon@gmail.com>"]
 edition = "2018"
@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 nannou = "0.15"
-core = { path = "../core" }
+utopia_core = { path = "../utopia_core" }

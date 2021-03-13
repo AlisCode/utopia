@@ -1,4 +1,4 @@
-use core::{
+use utopia_core::{
     contexts::ContextProvider,
     controllers::{click::MouseClickEvent, TransformEvent},
     math::Size,

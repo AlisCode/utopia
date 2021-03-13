@@ -44,9 +44,6 @@ impl<T, W: Widget<T>> Controller<T, W> for Click<T> {
         event: Self::Event,
     ) -> Option<Self::Reaction> {
         let target = event.pos - origin;
-        // Fix origin
-        println!("target {:?} : {:?} - {:?}", target, event.pos, origin);
-        //println!("checking contains {:?} in {:?}", target, size);
         if !size.contains(target) {
             return None;
         }

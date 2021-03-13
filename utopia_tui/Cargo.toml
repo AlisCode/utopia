@@ -1,5 +1,5 @@
 [package]
-name = "tui"
+name = "utopia_tui"
 version = "0.1.0"
 authors = ["Olivier Pinon <oliv.pinon@gmail.com>"]
 edition = "2018"
@@ -7,5 +7,5 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-core = { path = "../core" }
+utopia_core = { path = "../utopia_core" }
 terminal = "0.2.1"

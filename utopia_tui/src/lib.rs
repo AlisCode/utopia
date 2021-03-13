@@ -1,4 +1,5 @@
-use core::{
+use std::io::{Stdout, Write};
+use utopia_core::{
     contexts::ContextProvider,
     math::Size,
     widgets::{
@@ -7,7 +8,6 @@ use core::{
     },
     Backend, CommonPrimitive,
 };
-use std::io::{Stdout, Write};
 
 use terminal::{Action, Clear, Terminal};
 pub struct TerminalBackend {
@@ -15,11 +15,11 @@ pub struct TerminalBackend {
     pub terminal: Terminal<Stdout>,
 }
 
-pub type Align<T> = core::widgets::align::Align<T, TerminalBackend>;
+pub type Align<T> = utopia_core::widgets::align::Align<T, TerminalBackend>;
 pub type Color = ();
-pub type Flex<T> = core::widgets::flex::Flex<T, TerminalBackend>;
-pub type Text = core::widgets::text::Text<(), Color>;
-pub type Border<T> = core::widgets::border::Border<T, Color, TerminalBackend>;
+pub type Flex<T> = utopia_core::widgets::flex::Flex<T, TerminalBackend>;
+pub type Text = utopia_core::widgets::text::Text<(), Color>;
+pub type Border<T> = utopia_core::widgets::border::Border<T, Color, TerminalBackend>;
 
 fn display_blank(
     terminal: &mut Terminal<Stdout>,

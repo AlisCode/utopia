@@ -1,10 +1,10 @@
-use core::{
+use terminal::{Action, Clear, Retrieved, Value};
+use utopia_core::{
     math::Size,
     visitors::{layout::LayoutVisitor, paint::PaintVisitor, Visitor},
     BoxConstraints, CommonPrimitive,
 };
-use terminal::{Action, Clear, Retrieved, Value};
-use tui::{Align, Border, Flex, TerminalBackend, TerminalPrimitive, Text};
+use utopia_tui::{Align, Border, Flex, TerminalBackend, TerminalPrimitive, Text};
 
 fn main() {
     let mut backend = TerminalBackend::default();

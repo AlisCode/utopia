@@ -1,4 +1,5 @@
-use core::{
+use std::cell::RefCell;
+use utopia_core::{
     controllers::click::{Click, MouseClickEvent},
     math::Size,
     visitors::{
@@ -6,10 +7,9 @@ use core::{
     },
     BoxConstraints, CommonPrimitive,
 };
-use std::cell::RefCell;
 
 use nannou::prelude::*;
-use testui_nannou::{
+use utopia_nannou::{
     Align, Border, Controlled, Flex, Font, LensWrap, NannouBackend, NannouEvent, NannouPrimitive,
     NannouWidgetPod, Padding, Text,
 };
@@ -75,8 +75,8 @@ fn model(_app: &App) -> AppState<MyState> {
     let text_other = Padding::new(text_other).all(5);
     let text_other = Border::new(text_other).border_width(5);
 
-    let lens_name = core::lens!(MyState, name);
-    let lens_name_other = core::lens!(MyState, other_name);
+    let lens_name = utopia_core::lens!(MyState, name);
+    let lens_name_other = utopia_core::lens!(MyState, other_name);
 
     let click = Click::new(set_string);
     let controlled = Controlled::new(text_other, click);
@@ -145,8 +145,8 @@ fn event(app: &App, state: &mut AppState<MyState>, event: Event) {
                         state
                             .event_visitor
                             .queue_event(NannouEvent::MouseClick(MouseClickEvent {
-                                mouse_button: core::controllers::click::MouseButton::Left,
-                                pos: core::math::Vector2::new(
+                                mouse_button: utopia_core::controllers::click::MouseButton::Left,
+                                pos: utopia_core::math::Vector2::new(
                                     state.mouse_state.pos.x,
                                     win_rect.h() - state.mouse_state.pos.y,
                                 ),
