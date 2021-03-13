@@ -10,6 +10,17 @@ pub struct Controlled<T, W, C, B: Backend> {
     _t: std::marker::PhantomData<T>,
 }
 
+impl<T, W, C, B: Backend> Controlled<T, W, C, B> {
+    pub fn new(widget: W, controller: C) -> Self {
+        Controlled {
+            widget,
+            controller,
+            _b: std::marker::PhantomData,
+            _t: std::marker::PhantomData,
+        }
+    }
+}
+
 impl<T, W: TypedWidget<T, B> + Widget<T>, C: TypedController<T, W, B>, B: Backend> Widget<T>
     for Controlled<T, W, C, B>
 {
@@ -31,7 +42,7 @@ impl<T, W: TypedWidget<T, B> + Widget<T>, C: TypedController<T, W, B>, B: Backen
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &Self::Event,
+        event: Self::Event,
     ) -> Option<Self::Reaction> {
         TypedController::<T, W, B>::event(
             &mut self.controller,

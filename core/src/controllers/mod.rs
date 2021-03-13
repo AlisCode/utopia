@@ -17,7 +17,7 @@ pub trait Controller<T, W: Widget<T>> {
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &Self::Event,
+        event: Self::Event,
     ) -> Option<Self::Reaction>;
 }
 
@@ -31,7 +31,7 @@ impl<T, W: Widget<T>, C: Controller<T, W>> Controller<T, W> for Box<C> {
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &Self::Event,
+        event: Self::Event,
     ) -> Option<Self::Reaction> {
         self.as_mut().event(child, origin, size, data, event)
     }
@@ -46,7 +46,7 @@ pub trait TypedController<T, W: TypedWidget<T, B>, B: Backend>:
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &B::Event,
+        event: B::Event,
     ) -> Option<B::EventReaction>;
 }
 
@@ -60,7 +60,7 @@ where
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &B::Event,
+        event: B::Event,
     ) -> Option<B::EventReaction> {
         sealed::InnerTypedController::<T, W, B>::event(self, child, origin, size, data, event)
     }
@@ -81,7 +81,7 @@ mod sealed {
             origin: Vector2,
             size: Size,
             data: &mut T,
-            event: &B::Event,
+            event: B::Event,
         ) -> Option<B::EventReaction>;
     }
 
@@ -97,7 +97,7 @@ mod sealed {
             origin: Vector2,
             size: Size,
             data: &mut T,
-            event: &B::Event,
+            event: B::Event,
         ) -> Option<B::EventReaction> {
             event.transform_event().and_then(|event| {
                 Controller::event(self, child, origin, size, data, event)
@@ -108,11 +108,11 @@ mod sealed {
 }
 
 pub trait TransformEvent<Event> {
-    fn transform_event(&self) -> Option<&Event>;
+    fn transform_event(self) -> Option<Event>;
 }
 
 impl<T> TransformEvent<T> for T {
-    fn transform_event(&self) -> Option<&T> {
+    fn transform_event(self) -> Option<T> {
         Some(self)
     }
 }

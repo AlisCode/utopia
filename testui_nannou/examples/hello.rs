@@ -1,14 +1,17 @@
 use core::{
+    controllers::click::{Click, MouseClickEvent},
     math::Size,
-    visitors::{layout::LayoutVisitor, paint::PaintVisitor, Visitor},
+    visitors::{
+        event::EventVisitor, layout::LayoutVisitor, paint::PaintVisitor, Visitor, VisitorMut,
+    },
     BoxConstraints, CommonPrimitive,
 };
 use std::cell::RefCell;
 
 use nannou::prelude::*;
 use testui_nannou::{
-    Align, Border, Flex, Font, LensWrap, NannouBackend, NannouPrimitive, NannouWidgetPod, Padding,
-    Text,
+    Align, Border, Controlled, Flex, Font, LensWrap, NannouBackend, NannouEvent, NannouPrimitive,
+    NannouWidgetPod, Padding, Text,
 };
 
 fn main() {
@@ -20,6 +23,13 @@ struct AppState<T> {
     state: T,
     widget: RefCell<NannouWidgetPod<T>>,
     widget_size: Option<Size>,
+    event_visitor: EventVisitor<NannouEvent>,
+    mouse_state: MouseState,
+}
+
+#[derive(Debug, Default)]
+pub struct MouseState {
+    pos: Vector2,
 }
 
 struct MyState {
@@ -47,6 +57,10 @@ fn view(app: &App, model: &AppState<MyState>, frame: Frame) {
         .expect("Failed to write to frame");
 }
 
+fn set_string(input: &mut String) {
+    input.push('a');
+}
+
 fn model(_app: &App) -> AppState<MyState> {
     let text = Text {
         font: Font::Default,
@@ -64,9 +78,12 @@ fn model(_app: &App) -> AppState<MyState> {
     let lens_name = core::lens!(MyState, name);
     let lens_name_other = core::lens!(MyState, other_name);
 
+    let click = Click::new(set_string);
+    let controlled = Controlled::new(text_other, click);
+
     let mut flex = Flex::default();
     flex.add(LensWrap::new(Border::new(text).border_width(5), lens_name));
-    flex.add(LensWrap::new(text_other, lens_name_other));
+    flex.add(LensWrap::new(controlled, lens_name_other));
 
     let centered = Align::new(flex);
 
@@ -80,13 +97,15 @@ fn model(_app: &App) -> AppState<MyState> {
         state,
         widget: RefCell::new(NannouWidgetPod::new(centered)),
         widget_size: None,
+        event_visitor: EventVisitor::default(),
+        mouse_state: MouseState::default(),
     }
 }
 
 fn event(app: &App, state: &mut AppState<MyState>, event: Event) {
+    let win_rect = app.window_rect();
     match event {
         Event::Update(_update) => {
-            let win_rect = app.window_rect();
             let box_constraints = BoxConstraints {
                 min: Size {
                     width: 0.,
@@ -104,7 +123,38 @@ fn event(app: &App, state: &mut AppState<MyState>, event: Event) {
             let mut widget = state.widget.borrow_mut();
             layout_visitor.visit(&mut *widget, &state.backend, &state.state);
             let size = <LayoutVisitor as Visitor<String, NannouBackend>>::finish(layout_visitor);
+
+            state.event_visitor.size = size;
+            state
+                .event_visitor
+                .visit_mut(&mut *widget, &state.backend, &mut state.state);
+
             state.widget_size = Some(size);
+        }
+        Event::WindowEvent { simple, .. } => {
+            if let Some(event) = simple {
+                match event {
+                    WindowEvent::MouseMoved(pos) => {
+                        state.mouse_state.pos =
+                            Point2::new(pos.x + win_rect.w() / 2., pos.y + win_rect.h() / 2.);
+                    }
+                    WindowEvent::MousePressed(button) => {
+                        if button != MouseButton::Left {
+                            return;
+                        }
+                        state
+                            .event_visitor
+                            .queue_event(NannouEvent::MouseClick(MouseClickEvent {
+                                mouse_button: core::controllers::click::MouseButton::Left,
+                                pos: core::math::Vector2::new(
+                                    state.mouse_state.pos.x,
+                                    win_rect.h() - state.mouse_state.pos.y,
+                                ),
+                            }))
+                    }
+                    _ => (),
+                }
+            }
         }
         _ => (),
     }

@@ -46,7 +46,7 @@ impl<T, U, L: Lens<T, U>, B: Backend> Widget<T> for LensWrap<T, U, L, B> {
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &Self::Event,
+        event: Self::Event,
     ) -> Option<Self::Reaction> {
         let widget = &mut self.widget;
         self.lens.with_mut(data, |data| {

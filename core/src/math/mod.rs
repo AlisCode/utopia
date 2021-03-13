@@ -81,6 +81,10 @@ impl std::ops::Sub<Vector2> for Vector2 {
 
 impl Vector2 {
     pub const ZERO: Vector2 = Vector2 { x: 0., y: 0. };
+
+    pub fn new(x: f32, y: f32) -> Self {
+        Vector2 { x, y }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]

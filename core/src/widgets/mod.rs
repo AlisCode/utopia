@@ -38,7 +38,7 @@ pub trait Widget<T> {
         _origin: Vector2,
         _size: Size,
         _data: &mut T,
-        _event: &Self::Event,
+        _event: Self::Event,
     ) -> Option<Self::Reaction> {
         None
     }
@@ -76,7 +76,7 @@ impl<T, W: Widget<T>> Widget<T> for Box<W> {
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &Self::Event,
+        event: Self::Event,
     ) -> Option<Self::Reaction> {
         self.as_mut().event(origin, size, data, event)
     }
@@ -93,7 +93,7 @@ pub trait TypedWidget<T, B: Backend>: sealed::InnerTypedWidget<T, B> {
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &B::Event,
+        event: B::Event,
     ) -> Option<B::EventReaction>;
     fn layout(&mut self, bc: &BoxConstraints, backend: &B, data: &T) -> Size;
 }
@@ -111,7 +111,7 @@ where
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &B::Event,
+        event: B::Event,
     ) -> Option<B::EventReaction> {
         <Self as sealed::InnerTypedWidget<T, B>>::event(self, origin, size, data, event)
     }
@@ -135,7 +135,7 @@ mod sealed {
             origin: Vector2,
             size: Size,
             data: &mut T,
-            event: &B::Event,
+            event: B::Event,
         ) -> Option<B::EventReaction>;
         fn layout(&mut self, bc: &BoxConstraints, backend: &B, data: &T) -> Size;
     }
@@ -158,7 +158,7 @@ mod sealed {
             origin: Vector2,
             size: Size,
             data: &mut T,
-            event: &B::Event,
+            event: B::Event,
         ) -> Option<B::EventReaction> {
             event.transform_event().and_then(|event| {
                 <Self as Widget<T>>::event(self, origin, size, data, event)

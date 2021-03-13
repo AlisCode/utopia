@@ -9,6 +9,7 @@ use super::{pod::WidgetPod, TypedWidget, Widget};
 
 pub struct Flex<T, B: Backend> {
     children: Vec<FlexChild<T, B>>,
+    computed_sizes: Vec<Size>,
 }
 
 struct FlexChild<T, B: Backend> {
@@ -25,6 +26,7 @@ impl<T, B: Backend> Default for Flex<T, B> {
     fn default() -> Self {
         Flex {
             children: Vec::default(),
+            computed_sizes: Vec::default(),
         }
     }
 }
@@ -34,18 +36,23 @@ impl<T, B: Backend> Flex<T, B> {
         self.children.push(FlexChild {
             widget: WidgetPod::new(widget),
             flex_option: FlexOption::NonFlex,
-        })
+        });
+        self.computed_sizes.push(Size::default());
     }
 
     pub fn add_flex<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW, flex_factor: u8) {
         self.children.push(FlexChild {
             widget: WidgetPod::new(widget),
             flex_option: FlexOption::Flex(flex_factor),
-        })
+        });
+        self.computed_sizes.push(Size::default());
     }
 }
 
-impl<T, B: Backend> Widget<T> for Flex<T, B> {
+impl<T, B: Backend> Widget<T> for Flex<T, B>
+where
+    B::Event: Clone,
+{
     type Primitive = CommonPrimitive<B::Primitive>;
     type Context = B;
     type Event = B::Event;
@@ -112,6 +119,13 @@ impl<T, B: Backend> Widget<T> for Flex<T, B> {
             })
             .collect();
 
+        inflexible_children
+            .iter()
+            .chain(flexible_children.iter())
+            .for_each(|(index, size)| {
+                self.computed_sizes[*index] = *size;
+            });
+
         let height = inflexible_children
             .iter()
             .chain(flexible_children.iter())
@@ -141,11 +155,14 @@ impl<T, B: Backend> Widget<T> for Flex<T, B> {
         }
     }
 
-    fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {
+    fn draw(&self, origin: Vector2, _size: Size, data: &T) -> Self::Primitive {
         let children = self
             .children
             .iter()
-            .map(|flex_child| TypedWidget::<T, B>::draw(&flex_child.widget, origin, size, data))
+            .zip(self.computed_sizes.iter())
+            .map(|(flex_child, size)| {
+                TypedWidget::<T, B>::draw(&flex_child.widget, origin, *size, data)
+            })
             .collect();
 
         CommonPrimitive::Group { children }
@@ -154,14 +171,21 @@ impl<T, B: Backend> Widget<T> for Flex<T, B> {
     fn event(
         &mut self,
         origin: Vector2,
-        size: Size,
+        _size: Size,
         data: &mut T,
-        event: &Self::Event,
+        event: Self::Event,
     ) -> Option<Self::Reaction> {
         self.children
             .iter_mut()
-            .filter_map(|flex_child| {
-                TypedWidget::<T, B>::event(&mut flex_child.widget, origin, size, data, event)
+            .zip(self.computed_sizes.iter())
+            .filter_map(|(flex_child, size)| {
+                TypedWidget::<T, B>::event(
+                    &mut flex_child.widget,
+                    origin,
+                    *size,
+                    data,
+                    event.clone(),
+                )
             })
             .next()
     }

@@ -17,13 +17,13 @@ impl<T> Click<T> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MouseClickEvent {
-    pos: Vector2,
-    mouse_button: MouseButton,
+    pub pos: Vector2,
+    pub mouse_button: MouseButton,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum MouseButton {
     Left,
     Right,
@@ -41,9 +41,12 @@ impl<T, W: Widget<T>> Controller<T, W> for Click<T> {
         origin: Vector2,
         size: Size,
         data: &mut T,
-        event: &Self::Event,
+        event: Self::Event,
     ) -> Option<Self::Reaction> {
         let target = event.pos - origin;
+        // Fix origin
+        println!("target {:?} : {:?} - {:?}", target, event.pos, origin);
+        //println!("checking contains {:?} in {:?}", target, size);
         if !size.contains(target) {
             return None;
         }

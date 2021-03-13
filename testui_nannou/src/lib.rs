@@ -1,9 +1,11 @@
 use core::{
     contexts::ContextProvider,
+    controllers::{click::MouseClickEvent, TransformEvent},
     math::Size,
     widgets::{
         align::Align as AlignWidget,
         border::{Border as BorderWidget, QuadPrimitive},
+        controlled::Controlled as ControlledWidget,
         flex::Flex as FlexWidget,
         lens::LensWrap as LensWrapWidget,
         padding::Padding as PaddingWidget,
@@ -35,6 +37,7 @@ impl Default for NannouBackend {
 
 pub type Align<T> = AlignWidget<T, NannouBackend>;
 pub type Color = nannou::color::Srgb<u8>;
+pub type Controlled<T, W, C> = ControlledWidget<T, W, C, NannouBackend>;
 pub type NannouWidgetPod<T> = WidgetPod<T, NannouBackend>;
 pub type Flex<T> = FlexWidget<T, NannouBackend>;
 pub type Text = TextWidget<Font, Color>;
@@ -133,9 +136,28 @@ where
     }
 }
 
+#[derive(Debug, Clone)]
+pub enum NannouEvent {
+    MouseClick(MouseClickEvent),
+}
+
+impl TransformEvent<()> for NannouEvent {
+    fn transform_event(self) -> Option<()> {
+        Some(())
+    }
+}
+
+impl TransformEvent<MouseClickEvent> for NannouEvent {
+    fn transform_event(self) -> Option<MouseClickEvent> {
+        match self {
+            NannouEvent::MouseClick(click) => Some(click),
+        }
+    }
+}
+
 impl Backend for NannouBackend {
     type Primitive = NannouPrimitive;
-    type Event = ();
+    type Event = NannouEvent;
     type EventReaction = ();
 }
 
