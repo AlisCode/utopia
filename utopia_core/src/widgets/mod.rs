@@ -12,7 +12,7 @@ pub mod controlled;
 pub mod lens;
 pub mod pod;
 
-pub trait WidgetExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
+pub trait CoreExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
     fn boxed(self) -> Box<Self> {
         Box::new(self)
     }
@@ -32,7 +32,7 @@ pub trait WidgetExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
     }
 }
 
-impl<T, B: Backend, W: TypedWidget<T, B> + 'static> WidgetExt<T, B> for W {}
+impl<T, B: Backend, W: TypedWidget<T, B> + 'static> CoreExt<T, B> for W {}
 
 pub trait Widget<T> {
     type Primitive;

@@ -15,6 +15,22 @@ pub struct Text<Font, Color> {
     pub color: Color,
 }
 
+impl<Font: Default, Color: Default> Default for Text<Font, Color> {
+    fn default() -> Self {
+        Text {
+            font: Font::default(),
+            font_size: 16,
+            color: Color::default(),
+        }
+    }
+}
+
+impl<Font: Default, Color: Default> Text<Font, Color> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
 impl<T: Display, Font: Clone, Color: Clone> Widget<T> for Text<Font, Color> {
     type Primitive = TextPrimitive<Font, Color>;
     type Context = MeasureBrush<Font>;

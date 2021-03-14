@@ -3,6 +3,12 @@ use nannou::{geom::rect::Rect, text::Builder as TextBuilder};
 use utopia_core::{contexts::ContextProvider, math::Size, Backend};
 use utopia_text::context::MeasureBrush;
 
+pub mod event;
+pub mod font;
+pub mod interface;
+pub mod primitive;
+pub mod widgets;
+
 pub struct NannouBackend {
     measure_brush: MeasureBrush<Font>,
 }
@@ -15,12 +21,6 @@ impl Default for NannouBackend {
         NannouBackend { measure_brush }
     }
 }
-
-pub mod event;
-pub mod font;
-pub mod interface;
-pub mod primitive;
-pub mod widgets;
 
 impl Backend for NannouBackend {
     type Primitive = primitive::NannouPrimitive;

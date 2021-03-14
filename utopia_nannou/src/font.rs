@@ -4,6 +4,12 @@ pub enum Font {
     Font(nannou::text::Font),
 }
 
+impl Default for Font {
+    fn default() -> Self {
+        Font::Default
+    }
+}
+
 impl Font {
     pub fn resolve(&self) -> nannou::text::Font {
         match self {
