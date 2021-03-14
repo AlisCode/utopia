@@ -1,4 +1,9 @@
+use controlled::Controlled;
+use lens::LensWrap;
+
 use crate::{
+    controllers::TypedController,
+    lens::Lens,
     math::{Size, Vector2},
     Backend, BoxConstraints,
 };
@@ -10,6 +15,20 @@ pub mod pod;
 pub trait WidgetExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
     fn boxed(self) -> Box<Self> {
         Box::new(self)
+    }
+
+    fn controlled<C: TypedController<T, Self, B>>(
+        self,
+        controller: C,
+    ) -> Controlled<T, Self, C, B> {
+        Controlled::new(self, controller)
+    }
+
+    fn lens<U, L: Lens<T, U>>(self, lens: L) -> LensWrap<T, U, L, B>
+    where
+        Self: TypedWidget<U, B>,
+    {
+        LensWrap::new(self, lens)
     }
 }
 
