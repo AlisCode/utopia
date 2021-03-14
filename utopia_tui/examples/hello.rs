@@ -1,7 +1,7 @@
 use terminal::{Action, Clear, Retrieved, Value};
 use utopia_core::{
     math::Size,
-    visitors::{layout::LayoutVisitor, paint::PaintVisitor, Visitor},
+    steps::{layout::LayoutStep, paint::PaintStep, Visitor},
     BoxConstraints, CommonPrimitive,
 };
 use utopia_tui::{Align, Border, Flex, TerminalBackend, TerminalPrimitive, Text};
@@ -36,7 +36,7 @@ fn main() {
 
     let mut column = Align::new(column);
 
-    let mut layout_visitor = LayoutVisitor {
+    let mut layout_visitor = LayoutStep {
         box_constraints: BoxConstraints {
             min: Size {
                 width: 0.,
@@ -47,15 +47,15 @@ fn main() {
         final_size: None,
     };
     layout_visitor.visit(&mut column, &backend, &data);
-    let size = <LayoutVisitor as Visitor<String, TerminalBackend>>::finish(layout_visitor);
+    let size = <LayoutStep as Visitor<String, TerminalBackend>>::finish(layout_visitor);
 
-    let mut paint_visitor = PaintVisitor {
+    let mut paint_visitor = PaintStep {
         primitive: TerminalPrimitive::Common(CommonPrimitive::None),
         size,
     };
 
     paint_visitor.visit(&mut column, &backend, &data);
-    let primitive = <PaintVisitor<TerminalPrimitive> as Visitor<String, TerminalBackend>>::finish(
+    let primitive = <PaintStep<TerminalPrimitive> as Visitor<String, TerminalBackend>>::finish(
         paint_visitor,
     );
 
