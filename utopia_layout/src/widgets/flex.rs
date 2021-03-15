@@ -11,6 +11,13 @@ use utopia_core::widgets::{pod::WidgetPod, TypedWidget, Widget};
 pub struct Flex<T, B: Backend> {
     children: Vec<FlexChild<T, B>>,
     computed_sizes: Vec<Size>,
+    flex_direction: FlexDirection,
+}
+
+#[derive(Clone, Copy)]
+enum FlexDirection {
+    Row,
+    Column,
 }
 
 struct FlexChild<T, B: Backend> {
@@ -23,32 +30,43 @@ enum FlexOption {
     Flex(u8),
 }
 
-impl<T, B: Backend> Default for Flex<T, B> {
-    fn default() -> Self {
+impl<T, B: Backend> Flex<T, B> {
+    pub fn row() -> Self {
         Flex {
             children: Vec::default(),
             computed_sizes: Vec::default(),
+            flex_direction: FlexDirection::Row,
         }
     }
-}
 
-// TODO: Change this to have a builder-like pattern
-// TODO: Handle flex direction
-impl<T, B: Backend> Flex<T, B> {
-    pub fn add<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW) {
+    pub fn column() -> Self {
+        Flex {
+            children: Vec::default(),
+            computed_sizes: Vec::default(),
+            flex_direction: FlexDirection::Column,
+        }
+    }
+
+    pub fn add<TW: TypedWidget<T, B> + 'static>(mut self, widget: TW) -> Self {
         self.children.push(FlexChild {
             widget: WidgetPod::new(widget),
             flex_option: FlexOption::NonFlex,
         });
         self.computed_sizes.push(Size::default());
+        self
     }
 
-    pub fn add_flex<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW, flex_factor: u8) {
+    pub fn add_flex<TW: TypedWidget<T, B> + 'static>(
+        mut self,
+        widget: TW,
+        flex_factor: u8,
+    ) -> Self {
         self.children.push(FlexChild {
             widget: WidgetPod::new(widget),
             flex_option: FlexOption::Flex(flex_factor),
         });
         self.computed_sizes.push(Size::default());
+        self
     }
 }
 
@@ -62,6 +80,8 @@ where
     type Reaction = B::EventReaction;
 
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
+        let flex_direction = self.flex_direction;
+
         // Step 1 : Layout inflexible children
         let loosened = bc.loosen();
 
@@ -79,12 +99,18 @@ where
             .collect();
 
         // Step 2 : Compute free space
-        let width = bc.max.width;
-        let sum_inflexible_children_width: f32 = inflexible_children
+        let space = match flex_direction {
+            FlexDirection::Row => bc.max.width,
+            FlexDirection::Column => bc.max.height,
+        };
+        let sum_inflexible_children: f32 = inflexible_children
             .iter()
-            .map(|(_index, size)| size.width)
+            .map(|(_index, size)| match flex_direction {
+                FlexDirection::Column => size.height,
+                FlexDirection::Row => size.width,
+            })
             .sum();
-        let free_space = width - sum_inflexible_children_width;
+        let free_space = space - sum_inflexible_children;
         let flex_factor_sum = self
             .children
             .iter()
@@ -103,14 +129,26 @@ where
             .filter_map(|(index, child)| match child.flex_option {
                 FlexOption::Flex(factor) => {
                     let factor = factor as f32;
-                    let constraint = BoxConstraints {
-                        min: Size {
-                            width: factor * space_per_flex,
-                            height: 0.,
+                    let constraint = match flex_direction {
+                        FlexDirection::Row => BoxConstraints {
+                            min: Size {
+                                width: factor * space_per_flex,
+                                height: 0.,
+                            },
+                            max: Size {
+                                width: factor * space_per_flex,
+                                height: bc.max.height,
+                            },
                         },
-                        max: Size {
-                            width: factor * space_per_flex,
-                            height: bc.max.height,
+                        FlexDirection::Column => BoxConstraints {
+                            min: Size {
+                                width: 0.,
+                                height: factor * space_per_flex,
+                            },
+                            max: Size {
+                                width: bc.max.width,
+                                height: factor * space_per_flex,
+                            },
                         },
                     };
                     Some((
@@ -122,6 +160,7 @@ where
             })
             .collect();
 
+        // Update all computed sizes
         inflexible_children
             .iter()
             .chain(flexible_children.iter())
@@ -129,10 +168,13 @@ where
                 self.computed_sizes[*index] = *size;
             });
 
-        let height = inflexible_children
+        let liner = inflexible_children
             .iter()
             .chain(flexible_children.iter())
-            .map(|(_index, size)| size.height.ceil() as u32)
+            .map(|(_index, size)| match flex_direction {
+                FlexDirection::Row => size.height.ceil() as u32,
+                FlexDirection::Column => size.width.ceil() as u32,
+            })
             .max()
             .unwrap_or_default()
             .max(bc.min.height as u32) as f32;
@@ -149,12 +191,21 @@ where
             .for_each(|(index, child)| {
                 child.widget.set_origin(position);
                 let size = index_and_size[&index];
-                position.x += size.width;
+                match flex_direction {
+                    FlexDirection::Row => position.x += size.width,
+                    FlexDirection::Column => position.y += size.height,
+                }
             });
 
-        Size {
-            width: position.x,
-            height,
+        match flex_direction {
+            FlexDirection::Row => Size {
+                width: position.x,
+                height: liner,
+            },
+            FlexDirection::Column => Size {
+                width: liner,
+                height: position.y,
+            },
         }
     }
 

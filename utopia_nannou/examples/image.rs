@@ -24,11 +24,11 @@ fn model(app: &App) -> NannouInterface<MyState> {
     let lens_text = utopia_core::lens!(MyState, text);
 
     let assets = app.assets_path().unwrap();
-    let mut flex = Flex::default();
-    flex.add(Image::new().lens(lens_img).border());
-    flex.add(Text::new().lens(lens_text).border());
+    let widget = Flex::column()
+        .add(Image::new().lens(lens_img).border())
+        .add(Text::new().lens(lens_text).border())
+        .centered();
 
-    let widget = flex.centered();
     let state = MyState {
         texture: Texture::from_path(app, assets.join("texture.png"))
             .expect("Failed to load texture"),
