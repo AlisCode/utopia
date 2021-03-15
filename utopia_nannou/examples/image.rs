@@ -25,9 +25,8 @@ fn model(app: &App) -> NannouInterface<MyState> {
 
     let assets = app.assets_path().unwrap();
     let widget = Flex::column()
-        .add(Image::new().lens(lens_img).border())
-        .add(Text::new().lens(lens_text).centered().border())
-        .border()
+        .add(Image::new().lens(lens_img).centered())
+        .add(Text::new().lens(lens_text).centered())
         .centered();
 
     let state = MyState {
