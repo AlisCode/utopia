@@ -1,4 +1,5 @@
 use crate::font::Font;
+use nannou::wgpu::Texture;
 use utopia_core::{
     controllers::TypedController,
     lens::Lens,
@@ -8,6 +9,7 @@ use utopia_core::{
     },
 };
 use utopia_decorations::widgets::{border::Border as BorderWidget, DecorationsExt};
+use utopia_image::widgets::image::Image as ImageWidget;
 use utopia_layout::widgets::{
     align::Align as AlignWidget, flex::Flex as FlexWidget, padding::Padding as PaddingWidget,
     LayoutExt,
@@ -19,6 +21,7 @@ use crate::NannouBackend;
 pub type Align<T> = AlignWidget<T, NannouBackend>;
 pub type Color = nannou::color::Srgb<u8>;
 pub type Controlled<T, W, C> = ControlledWidget<T, W, C, NannouBackend>;
+pub type Image = ImageWidget<Texture>;
 pub type NannouWidgetPod<T> = WidgetPod<T, NannouBackend>;
 pub type Flex<T> = FlexWidget<T, NannouBackend>;
 pub type Text = TextWidget<Font, Color>;
@@ -55,19 +58,22 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // CoreExt
     // ----
 
-    fn lens<U, L: Lens<T, U>>(self, lens: L) -> LensWrap<T, U, L>
-    where
-        Self: TypedWidget<U, NannouBackend> + Sized + 'static,
-    {
-        CoreExt::lens(self, lens)
-    }
-
     fn controlled<C: TypedController<T, Self, NannouBackend>>(
         self,
         controller: C,
     ) -> Controlled<T, Self, C> {
-        CoreExt::controlled(self, controller)
+        CoreExt::<T, NannouBackend>::controlled(self, controller)
     }
 }
 
+pub trait LensExt<T>: Sized + 'static {
+    fn lens<U, L: Lens<T, U>>(self, lens: L) -> LensWrap<T, U, L>
+    where
+        Self: TypedWidget<U, NannouBackend>,
+    {
+        LensWrap::new(self, lens)
+    }
+}
+
+impl<T, W: 'static> LensExt<T> for W {}
 impl<T, W: TypedWidget<T, NannouBackend> + Sized + 'static> WidgetExt<T> for W {}

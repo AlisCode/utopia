@@ -32,6 +32,8 @@ impl<T, B: Backend> Default for Flex<T, B> {
     }
 }
 
+// TODO: Change this to have a builder-like pattern
+// TODO: Handle flex direction
 impl<T, B: Backend> Flex<T, B> {
     pub fn add<TW: TypedWidget<T, B> + 'static>(&mut self, widget: TW) {
         self.children.push(FlexChild {

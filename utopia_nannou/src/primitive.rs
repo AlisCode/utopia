@@ -1,7 +1,8 @@
 use crate::{font::Font, widgets::Color};
-use nannou::{text::Scale, Draw};
+use nannou::{text::Scale, wgpu::Texture, Draw};
 use utopia_core::CommonPrimitive;
 use utopia_decorations::primitives::quad::QuadPrimitive;
+use utopia_image::primitive::ImagePrimitive;
 use utopia_text::primitives::text::TextPrimitive;
 
 #[derive(Debug)]
@@ -9,6 +10,7 @@ pub enum NannouPrimitive {
     Common(CommonPrimitive<NannouPrimitive>),
     Text(TextPrimitive<Font, Color>),
     Quad(QuadPrimitive<Color>),
+    Image(ImagePrimitive<Texture>),
 }
 
 impl NannouPrimitive {
@@ -46,6 +48,13 @@ impl NannouPrimitive {
                     .stroke_weight(quad.border_width as f32)
                     .stroke(quad.border_color);
             }
+            NannouPrimitive::Image(image) => {
+                let x = image.position.x + image.size.width / 2.;
+                let y = image.position.y + image.size.height / 2.;
+                draw.texture(&image.src)
+                    .x_y(x, y)
+                    .w_h(image.size.width, image.size.height);
+            }
         }
     }
 }
@@ -65,6 +74,12 @@ impl From<TextPrimitive<Font, Color>> for NannouPrimitive {
 impl From<QuadPrimitive<Color>> for NannouPrimitive {
     fn from(input: QuadPrimitive<Color>) -> Self {
         NannouPrimitive::Quad(input)
+    }
+}
+
+impl From<ImagePrimitive<Texture>> for NannouPrimitive {
+    fn from(input: ImagePrimitive<Texture>) -> Self {
+        NannouPrimitive::Image(input)
     }
 }
 

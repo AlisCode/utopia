@@ -2,6 +2,7 @@
 members = [
 	"utopia_core",
 	"utopia_decorations",
+	"utopia_image",
 	"utopia_layout",
 	"utopia_nannou",
 	"utopia_text",

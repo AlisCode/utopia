@@ -1,6 +1,7 @@
 use crate::font::Font;
-use nannou::{geom::rect::Rect, text::Builder as TextBuilder};
+use nannou::{geom::rect::Rect, text::Builder as TextBuilder, wgpu::Texture};
 use utopia_core::{contexts::ContextProvider, math::Size, Backend};
+use utopia_image::context::ImageContext;
 use utopia_text::context::MeasureBrush;
 
 pub mod event;
@@ -11,6 +12,7 @@ pub mod widgets;
 
 pub struct NannouBackend {
     measure_brush: MeasureBrush<Font>,
+    image_context: ImageContext<Texture>,
 }
 
 impl Default for NannouBackend {
@@ -18,7 +20,13 @@ impl Default for NannouBackend {
         let measure_brush = MeasureBrush {
             measure: Box::new(measure),
         };
-        NannouBackend { measure_brush }
+        let image_context = ImageContext {
+            measure: Box::new(measure_image),
+        };
+        NannouBackend {
+            measure_brush,
+            image_context,
+        }
     }
 }
 
@@ -43,8 +51,19 @@ fn measure(contents: &str, font: Font, size: u16) -> Size {
     }
 }
 
+fn measure_image(img: &Texture) -> Size {
+    let [x, y] = img.size();
+    Size::new(x as f32, y as f32)
+}
+
 impl ContextProvider<MeasureBrush<Font>> for NannouBackend {
     fn provide(&self) -> &MeasureBrush<Font> {
         &self.measure_brush
+    }
+}
+
+impl ContextProvider<ImageContext<Texture>> for NannouBackend {
+    fn provide(&self) -> &ImageContext<Texture> {
+        &self.image_context
     }
 }
