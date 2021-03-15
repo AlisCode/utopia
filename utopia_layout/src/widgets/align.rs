@@ -67,23 +67,28 @@ impl<T, B: Backend> Widget<T> for Align<T, B> {
     fn layout(&mut self, bc: &BoxConstraints, context: &Self::Context, data: &T) -> Size {
         let child_size = TypedWidget::<T, B>::layout(&mut self.widget, bc, context, data);
 
+        let mut bc_size = child_size.clone();
+        if bc.is_width_bounded() {
+            bc_size.width = bc.max.width;
+        }
+        if bc.is_height_bounded() {
+            bc_size.height = bc.max.height;
+        }
+
         let left = match self.horizontal {
             HorizontalAlignment::Left => 0.,
-            HorizontalAlignment::Center => bc.max.width / 2. - child_size.width / 2.,
-            HorizontalAlignment::Right => bc.max.width - child_size.width,
+            HorizontalAlignment::Center => bc_size.width / 2. - child_size.width / 2.,
+            HorizontalAlignment::Right => bc_size.width - child_size.width,
         };
         let top = match self.vertical {
             VerticalAlignment::Top => 0.,
-            VerticalAlignment::Center => bc.max.height / 2. - child_size.height / 2.,
-            VerticalAlignment::Bottom => bc.max.height - child_size.height,
+            VerticalAlignment::Center => bc_size.height / 2. - child_size.height / 2.,
+            VerticalAlignment::Bottom => bc_size.height - child_size.height,
         };
 
         self.widget.set_origin(Vector2 { x: left, y: top });
 
-        Size {
-            width: bc.max.width,
-            height: bc.max.height,
-        }
+        bc.constrain(bc_size)
     }
 
     fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {

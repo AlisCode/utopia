@@ -84,6 +84,10 @@ where
 
         // Step 1 : Layout inflexible children
         let loosened = bc.loosen();
+        let loosened = match flex_direction {
+            FlexDirection::Row => loosened.unbound_x(),
+            FlexDirection::Column => loosened.unbound_y(),
+        };
 
         let inflexible_children: Vec<(usize, Size)> = self
             .children
@@ -106,8 +110,8 @@ where
         let sum_inflexible_children: f32 = inflexible_children
             .iter()
             .map(|(_index, size)| match flex_direction {
-                FlexDirection::Column => size.height,
                 FlexDirection::Row => size.width,
+                FlexDirection::Column => size.height,
             })
             .sum();
         let free_space = space - sum_inflexible_children;
@@ -168,6 +172,10 @@ where
                 self.computed_sizes[*index] = *size;
             });
 
+        let min = match flex_direction {
+            FlexDirection::Row => bc.min.height,
+            FlexDirection::Column => bc.min.width,
+        };
         let liner = inflexible_children
             .iter()
             .chain(flexible_children.iter())
@@ -177,7 +185,7 @@ where
             })
             .max()
             .unwrap_or_default()
-            .max(bc.min.height as u32) as f32;
+            .max(min as u32) as f32;
         let index_and_size: HashMap<usize, Size> = inflexible_children
             .into_iter()
             .chain(flexible_children.into_iter())

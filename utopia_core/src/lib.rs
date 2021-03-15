@@ -27,6 +27,18 @@ impl BoxConstraints {
         }
     }
 
+    /// Unbounds the X axis
+    pub fn unbound_x(mut self) -> BoxConstraints {
+        self.max.width = f32::INFINITY;
+        self
+    }
+
+    /// Unbounds the Y axis
+    pub fn unbound_y(mut self) -> BoxConstraints {
+        self.max.height = f32::INFINITY;
+        self
+    }
+
     /// Shrink min and max constraints by size
     ///
     /// The given size is also [rounded away from zero],
@@ -55,6 +67,16 @@ impl BoxConstraints {
     /// [rounded away from zero]: struct.Size.html#method.expand
     pub fn constrain(&self, size: impl Into<Size>) -> Size {
         size.into().expand().clamp(self.min, self.max)
+    }
+
+    /// Whether there is an upper bound on the width.
+    pub fn is_width_bounded(&self) -> bool {
+        self.max.width.is_finite()
+    }
+
+    /// Whether there is an upper bound on the height.
+    pub fn is_height_bounded(&self) -> bool {
+        self.max.height.is_finite()
     }
 }
 
