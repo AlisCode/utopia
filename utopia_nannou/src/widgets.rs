@@ -10,9 +10,12 @@ use utopia_core::{
 };
 use utopia_decorations::widgets::{border::Border as BorderWidget, DecorationsExt};
 use utopia_image::widgets::image::Image as ImageWidget;
-use utopia_layout::widgets::{
-    align::Align as AlignWidget, flex::Flex as FlexWidget, padding::Padding as PaddingWidget,
-    LayoutExt,
+use utopia_layout::{
+    widgets::{
+        align::Align as AlignWidget, flex::Flex as FlexWidget, max_size::MaxSize as MaxSizeWidget,
+        min_size::MinSize as MinSizeWidget, padding::Padding as PaddingWidget, LayoutExt,
+    },
+    SizeConstraint,
 };
 use utopia_text::widgets::text::Text as TextWidget;
 
@@ -28,6 +31,8 @@ pub type Text = TextWidget<Font, Color>;
 pub type Border<T> = BorderWidget<T, Color, NannouBackend>;
 pub type LensWrap<T, U, L> = LensWrapWidget<T, U, L, NannouBackend>;
 pub type Padding<T> = PaddingWidget<T, NannouBackend>;
+pub type MinSize<T> = MinSizeWidget<T, NannouBackend>;
+pub type MaxSize<T> = MaxSizeWidget<T, NannouBackend>;
 
 pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ----
@@ -46,6 +51,13 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
         LayoutExt::<T, NannouBackend>::centered(self)
     }
 
+    fn min_size(self, constraint: SizeConstraint) -> MinSize<T> {
+        MinSize::new(self, constraint)
+    }
+
+    fn max_size(self, constraint: SizeConstraint) -> MaxSize<T> {
+        MaxSize::new(self, constraint)
+    }
     // ----
     // DecorationsExt
     // ----

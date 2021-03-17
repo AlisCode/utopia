@@ -2,10 +2,18 @@ use align::Align;
 use padding::Padding;
 use utopia_core::{widgets::TypedWidget, Backend};
 
-use self::align::{HorizontalAlignment, VerticalAlignment};
+use crate::SizeConstraint;
+
+use self::{
+    align::{HorizontalAlignment, VerticalAlignment},
+    max_size::MaxSize,
+    min_size::MinSize,
+};
 
 pub mod align;
 pub mod flex;
+pub mod max_size;
+pub mod min_size;
 pub mod padding;
 
 pub trait LayoutExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
@@ -21,6 +29,14 @@ pub trait LayoutExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
         Align::new(self)
             .horizontal(HorizontalAlignment::Center)
             .vertical(VerticalAlignment::Center)
+    }
+
+    fn min_size(self, constraint: SizeConstraint) -> MinSize<T, B> {
+        MinSize::new(self, constraint)
+    }
+
+    fn max_size(self, constraint: SizeConstraint) -> MaxSize<T, B> {
+        MaxSize::new(self, constraint)
     }
 }
 
