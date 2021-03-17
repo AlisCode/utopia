@@ -1,7 +1,7 @@
 use crate::{font::Font, widgets::Color};
 use nannou::{text::Scale, wgpu::Texture, Draw};
 use utopia_core::CommonPrimitive;
-use utopia_decorations::primitives::quad::QuadPrimitive;
+use utopia_decorations::primitives::{border::BorderPrimitive, quad::QuadPrimitive};
 use utopia_image::primitive::ImagePrimitive;
 use utopia_text::primitives::text::TextPrimitive;
 
@@ -10,6 +10,7 @@ pub enum NannouPrimitive {
     Common(CommonPrimitive<NannouPrimitive>),
     Text(TextPrimitive<Font, Color>),
     Quad(QuadPrimitive<Color>),
+    Border(BorderPrimitive<Color>),
     Image(ImagePrimitive<Texture>),
 }
 
@@ -40,13 +41,21 @@ impl NannouPrimitive {
                 let y = quad.origin.y + quad.size.height / 2.;
                 draw.rect()
                     .x_y(x, win_height - y)
+                    .w_h(quad.size.width.ceil(), quad.size.height.ceil())
+                    .color(quad.color);
+            }
+            NannouPrimitive::Border(border) => {
+                let x = border.origin.x + border.size.width / 2.;
+                let y = border.origin.y + border.size.height / 2.;
+                draw.rect()
+                    .x_y(x, win_height - y)
                     .w_h(
-                        (quad.size.width - quad.border_width as f32 / 2.).ceil(),
-                        (quad.size.height - quad.border_width as f32 / 2.).ceil(),
+                        (border.size.width - border.border_width as f32 / 2.).ceil(),
+                        (border.size.height - border.border_width as f32 / 2.).ceil(),
                     )
                     .no_fill()
-                    .stroke_weight(quad.border_width as f32)
-                    .stroke(quad.border_color);
+                    .stroke_weight(border.border_width as f32)
+                    .stroke(border.border_color);
             }
             NannouPrimitive::Image(image) => {
                 let x = image.position.x + image.size.width / 2.;
@@ -74,6 +83,12 @@ impl From<TextPrimitive<Font, Color>> for NannouPrimitive {
 impl From<QuadPrimitive<Color>> for NannouPrimitive {
     fn from(input: QuadPrimitive<Color>) -> Self {
         NannouPrimitive::Quad(input)
+    }
+}
+
+impl From<BorderPrimitive<Color>> for NannouPrimitive {
+    fn from(input: BorderPrimitive<Color>) -> Self {
+        NannouPrimitive::Border(input)
     }
 }
 

@@ -14,7 +14,10 @@ fn model(app: &App) -> NannouInterface<&'static str> {
     let rect = app.window_rect();
     let size = Size::new(rect.w(), rect.h());
 
-    let widget = Text::new().centered();
+    let widget = Text::new()
+        .background()
+        .color(nannou::color::PLUM)
+        .centered();
     let state = "Hello !";
 
     NannouInterface::new(widget, state, size)

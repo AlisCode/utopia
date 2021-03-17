@@ -4,7 +4,7 @@ use utopia_core::{
     Backend, BoxConstraints,
 };
 
-use crate::primitives::quad::QuadPrimitive;
+use crate::primitives::border::BorderPrimitive;
 
 pub struct Border<T, Color, B: Backend> {
     pub border_color: Color,
@@ -47,7 +47,7 @@ impl<T, Color: Default, B: Backend> Border<T, Color, B> {
 }
 
 impl<T, Color: Clone, B: Backend> Widget<T> for Border<T, Color, B> {
-    type Primitive = (QuadPrimitive<Color>, B::Primitive);
+    type Primitive = (BorderPrimitive<Color>, B::Primitive);
     type Context = B;
     type Event = B::Event;
     type Reaction = B::EventReaction;
@@ -69,7 +69,7 @@ impl<T, Color: Clone, B: Backend> Widget<T> for Border<T, Color, B> {
     }
 
     fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {
-        let quad = QuadPrimitive {
+        let border = BorderPrimitive {
             border_color: self.border_color.clone(),
             border_radius: self.border_radius,
             border_width: self.border_width,
@@ -77,7 +77,7 @@ impl<T, Color: Clone, B: Backend> Widget<T> for Border<T, Color, B> {
             size,
         };
         let inner = TypedWidget::<T, B>::draw(&self.widget, origin, size, data);
-        (quad, inner)
+        (border, inner)
     }
 
     fn event(

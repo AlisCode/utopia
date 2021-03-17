@@ -4,7 +4,7 @@ A modular, data-driven UI toolkit with a focus on games
 
 ## Roadmap 
 
-* BackgroundColor widget
+* Dynamically change a param of a Widget (through lenses, perhaps?)
 * Scrolling widget
 	* Clip primitive
 	* Scrollbar widget

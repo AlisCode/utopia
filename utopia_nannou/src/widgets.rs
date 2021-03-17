@@ -8,7 +8,9 @@ use utopia_core::{
         pod::WidgetPod, CoreExt, TypedWidget,
     },
 };
-use utopia_decorations::widgets::{border::Border as BorderWidget, DecorationsExt};
+use utopia_decorations::widgets::{
+    background::Background as BackgroundWidget, border::Border as BorderWidget, DecorationsExt,
+};
 use utopia_image::widgets::image::Image as ImageWidget;
 use utopia_layout::{
     widgets::{
@@ -29,6 +31,7 @@ pub type NannouWidgetPod<T> = WidgetPod<T, NannouBackend>;
 pub type Flex<T> = FlexWidget<T, NannouBackend>;
 pub type Text = TextWidget<Font, Color>;
 pub type Border<T> = BorderWidget<T, Color, NannouBackend>;
+pub type Background<T> = BackgroundWidget<T, Color, NannouBackend>;
 pub type LensWrap<T, U, L> = LensWrapWidget<T, U, L, NannouBackend>;
 pub type Padding<T> = PaddingWidget<T, NannouBackend>;
 pub type MinSize<T> = MinSizeWidget<T, NannouBackend>;
@@ -63,7 +66,11 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ----
 
     fn border(self) -> Border<T> {
-        DecorationsExt::<T, NannouBackend>::bordered(self)
+        DecorationsExt::<T, NannouBackend>::border(self)
+    }
+
+    fn background(self) -> Background<T> {
+        DecorationsExt::<T, NannouBackend>::background(self)
     }
 
     // ----
