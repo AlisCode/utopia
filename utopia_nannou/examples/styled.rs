@@ -1,9 +1,10 @@
 use utopia_core::{controllers::click::Click, math::Size};
 
 use nannou::prelude::*;
+use utopia_layout::{SizeConstraint, ValueConstraint};
 use utopia_nannou::{
     interface::NannouInterface,
-    widgets::{Color, Flex, LensExt, Styled, Text, WidgetExt},
+    widgets::{Color, Flex, LensExt, Text, WidgetExt},
 };
 
 fn main() {
@@ -15,7 +16,7 @@ pub struct MyState {
     text_blue: &'static str,
     text_green: &'static str,
     text: &'static str,
-    pub text_color: Color,
+    text_color: Color,
 }
 
 fn on_click_red(input: &mut MyState) {
@@ -25,6 +26,7 @@ fn on_click_red(input: &mut MyState) {
 fn on_click_green(input: &mut MyState) {
     input.text_color = nannou::color::GREEN;
 }
+
 fn on_click_blue(input: &mut MyState) {
     input.text_color = nannou::color::BLUE;
 }
@@ -67,10 +69,20 @@ fn model(app: &App) -> NannouInterface<MyState> {
                 .controlled(Click::new(on_click_blue)),
         );
 
-    let widget = Text::new().lens(lens_text);
-    let widget = Styled::new(widget, lens_color, text_color);
+    let color_shower = Text::new()
+        .lens(lens_text)
+        .styled(lens_color, text_color)
+        .padding()
+        .all(10)
+        .min_size(SizeConstraint {
+            width: ValueConstraint::Percent(300.),
+            height: ValueConstraint::Unconstrained,
+        });
 
-    let col = Flex::column().add(row).add(widget);
+    let widget = Flex::column()
+        .add(row.centered())
+        .add(color_shower)
+        .centered();
 
     let state = MyState {
         text_red: "Red",
@@ -80,5 +92,5 @@ fn model(app: &App) -> NannouInterface<MyState> {
         text_color: nannou::color::PLUM,
     };
 
-    NannouInterface::new(col.centered(), state, size)
+    NannouInterface::new(widget, state, size)
 }

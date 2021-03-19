@@ -1,3 +1,5 @@
+use std::ops::{Deref, DerefMut};
+
 use crate::font::Font;
 use nannou::wgpu::Texture;
 use utopia_core::{
@@ -84,6 +86,18 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     ) -> Controlled<T, Self, C> {
         CoreExt::<T, NannouBackend>::controlled(self, controller)
     }
+
+    fn styled<U: Clone, W, L: Lens<T, U>, LW: Lens<W, U>>(
+        self,
+        lens: L,
+        lens_widget: LW,
+    ) -> Styled<U, L, LW, W, Self>
+    where
+        Self: Deref<Target = W> + DerefMut,
+    {
+        Styled::new::<T>(self, lens, lens_widget)
+        //CoreExt::styled(self, lens, lens_widget)
+    }
 }
 
 pub trait LensExt<T>: Sized + 'static {
@@ -93,19 +107,6 @@ pub trait LensExt<T>: Sized + 'static {
     {
         LensWrap::new(self, lens)
     }
-
-    /*
-    fn styled<U, L: Lens<T, U>, LW: Lens<Self, U>>(
-        self,
-        lens: L,
-        lens_widget: LW,
-    ) -> Styled<Self, U, L, LW>
-    where
-        Self: TypedWidget<T, NannouBackend>,
-    {
-        CoreExt::styled(self, lens, lens_widget)
-    }
-    */
 }
 
 impl<T, W: 'static> LensExt<T> for W {}
