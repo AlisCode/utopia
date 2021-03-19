@@ -5,7 +5,7 @@ use utopia_core::{
     lens::Lens,
     widgets::{
         controlled::Controlled as ControlledWidget, lens::LensWrap as LensWrapWidget,
-        pod::WidgetPod, CoreExt, TypedWidget,
+        pod::WidgetPod, styled::Styled as StyledWidget, CoreExt, TypedWidget,
     },
 };
 use utopia_decorations::widgets::{
@@ -32,10 +32,11 @@ pub type Flex<T> = FlexWidget<T, NannouBackend>;
 pub type Text = TextWidget<Font, Color>;
 pub type Border<T> = BorderWidget<T, Color, NannouBackend>;
 pub type Background<T> = BackgroundWidget<T, Color, NannouBackend>;
-pub type LensWrap<T, U, L> = LensWrapWidget<T, U, L, NannouBackend>;
+pub type LensWrap<T, U, L, W> = LensWrapWidget<T, U, L, W, NannouBackend>;
 pub type Padding<T> = PaddingWidget<T, NannouBackend>;
 pub type MinSize<T> = MinSizeWidget<T, NannouBackend>;
 pub type MaxSize<T> = MaxSizeWidget<T, NannouBackend>;
+pub type Styled<U, L, LW, W, TW> = StyledWidget<U, L, LW, W, TW, NannouBackend>;
 
 pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ----
@@ -86,12 +87,25 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
 }
 
 pub trait LensExt<T>: Sized + 'static {
-    fn lens<U, L: Lens<T, U>>(self, lens: L) -> LensWrap<T, U, L>
+    fn lens<U, L: Lens<T, U>>(self, lens: L) -> LensWrap<T, U, L, Self>
     where
         Self: TypedWidget<U, NannouBackend>,
     {
         LensWrap::new(self, lens)
     }
+
+    /*
+    fn styled<U, L: Lens<T, U>, LW: Lens<Self, U>>(
+        self,
+        lens: L,
+        lens_widget: LW,
+    ) -> Styled<Self, U, L, LW>
+    where
+        Self: TypedWidget<T, NannouBackend>,
+    {
+        CoreExt::styled(self, lens, lens_widget)
+    }
+    */
 }
 
 impl<T, W: 'static> LensExt<T> for W {}

@@ -4,25 +4,47 @@ use crate::{
     Backend, BoxConstraints,
 };
 
-use super::{pod::WidgetPod, TypedWidget, Widget};
+use super::{TypedWidget, Widget};
 
-pub struct LensWrap<T, U, L: Lens<T, U>, B: Backend> {
+pub struct LensWrap<T, U, L: Lens<T, U>, W: TypedWidget<U, B>, B: Backend> {
     lens: L,
-    widget: WidgetPod<U, B>,
+    widget: W,
     _t: std::marker::PhantomData<T>,
+    _u: std::marker::PhantomData<U>,
+    _b: std::marker::PhantomData<B>,
 }
 
-impl<T, U, L: Lens<T, U>, B: Backend> LensWrap<T, U, L, B> {
-    pub fn new<TW: TypedWidget<U, B> + 'static>(widget: TW, lens: L) -> Self {
+impl<T, U, L: Lens<T, U>, W: TypedWidget<U, B>, B: Backend> std::ops::Deref
+    for LensWrap<T, U, L, W, B>
+{
+    type Target = W;
+
+    fn deref(&self) -> &Self::Target {
+        &self.widget
+    }
+}
+
+impl<T, U, L: Lens<T, U>, W: TypedWidget<U, B>, B: Backend> std::ops::DerefMut
+    for LensWrap<T, U, L, W, B>
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.widget
+    }
+}
+
+impl<T, U, L: Lens<T, U>, W: TypedWidget<U, B>, B: Backend> LensWrap<T, U, L, W, B> {
+    pub fn new(widget: W, lens: L) -> Self {
         LensWrap {
             lens,
-            widget: WidgetPod::new(widget),
+            widget,
             _t: std::marker::PhantomData,
+            _u: std::marker::PhantomData,
+            _b: std::marker::PhantomData,
         }
     }
 }
 
-impl<T, U, L: Lens<T, U>, B: Backend> Widget<T> for LensWrap<T, U, L, B> {
+impl<T, U, L: Lens<T, U>, W: TypedWidget<U, B>, B: Backend> Widget<T> for LensWrap<T, U, L, W, B> {
     type Primitive = B::Primitive;
     type Context = B;
     type Event = B::Event;

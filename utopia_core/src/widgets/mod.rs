@@ -1,3 +1,5 @@
+use std::ops::{Deref, DerefMut};
+
 use controlled::Controlled;
 use lens::LensWrap;
 
@@ -8,9 +10,12 @@ use crate::{
     Backend, BoxConstraints,
 };
 
+use self::styled::Styled;
+
 pub mod controlled;
 pub mod lens;
 pub mod pod;
+pub mod styled;
 
 pub trait CoreExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
     fn boxed(self) -> Box<Self> {
@@ -24,11 +29,22 @@ pub trait CoreExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
         Controlled::new(self, controller)
     }
 
-    fn lens<U, L: Lens<T, U>>(self, lens: L) -> LensWrap<T, U, L, B>
+    fn lens<U, L: Lens<T, U>>(self, lens: L) -> LensWrap<T, U, L, Self, B>
     where
         Self: TypedWidget<U, B>,
     {
         LensWrap::new(self, lens)
+    }
+
+    fn styled<U: Clone, W: TypedWidget<T, B>, L: Lens<T, U>, LW: Lens<W, U>>(
+        self,
+        lens: L,
+        lens_widget: LW,
+    ) -> Styled<U, L, LW, W, Self, B>
+    where
+        Self: Deref<Target = W> + DerefMut,
+    {
+        Styled::new(self, lens, lens_widget)
     }
 }
 
