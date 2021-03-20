@@ -1,8 +1,9 @@
 use crate::{font::Font, widgets::Color};
-use nannou::{text::Scale, wgpu::Texture, Draw};
+use nannou::{geom::rect::Rect, text::Scale, wgpu::Texture, Draw};
 use utopia_core::CommonPrimitive;
 use utopia_decorations::primitives::{border::BorderPrimitive, quad::QuadPrimitive};
 use utopia_image::primitive::ImagePrimitive;
+use utopia_scroll::primitive::ClipPrimitive;
 use utopia_text::primitives::text::TextPrimitive;
 
 #[derive(Debug)]
@@ -12,6 +13,7 @@ pub enum NannouPrimitive {
     Quad(QuadPrimitive<Color>),
     Border(BorderPrimitive<Color>),
     Image(ImagePrimitive<Texture>),
+    Clip(ClipPrimitive<NannouPrimitive>),
 }
 
 impl NannouPrimitive {
@@ -64,6 +66,17 @@ impl NannouPrimitive {
                     .x_y(x, y)
                     .w_h(image.size.width, image.size.height);
             }
+            NannouPrimitive::Clip(clip) => {
+                let x = clip.bounds.width / 2.;
+                let x = nannou::geom::Range::new(-x, x);
+                let y = clip.bounds.height / 2.;
+                let y = nannou::geom::Range::new(-y, y);
+
+                let scissor = draw
+                    .scissor(Rect { x, y })
+                    .x_y(-clip.offset.x, clip.offset.y);
+                clip.primitive.draw(&scissor, win_height);
+            }
         }
     }
 }
@@ -95,6 +108,12 @@ impl From<BorderPrimitive<Color>> for NannouPrimitive {
 impl From<ImagePrimitive<Texture>> for NannouPrimitive {
     fn from(input: ImagePrimitive<Texture>) -> Self {
         NannouPrimitive::Image(input)
+    }
+}
+
+impl From<ClipPrimitive<NannouPrimitive>> for NannouPrimitive {
+    fn from(input: ClipPrimitive<NannouPrimitive>) -> Self {
+        NannouPrimitive::Clip(input)
     }
 }
 

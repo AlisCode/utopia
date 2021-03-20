@@ -21,6 +21,7 @@ use utopia_layout::{
     },
     SizeConstraint,
 };
+use utopia_scroll::widget::Scrollable as ScrollableWidget;
 use utopia_text::widgets::text::Text as TextWidget;
 
 use crate::NannouBackend;
@@ -39,6 +40,7 @@ pub type Padding<T> = PaddingWidget<T, NannouBackend>;
 pub type MinSize<T> = MinSizeWidget<T, NannouBackend>;
 pub type MaxSize<T> = MaxSizeWidget<T, NannouBackend>;
 pub type Styled<U, L, LW, W, TW> = StyledWidget<U, L, LW, W, TW, NannouBackend>;
+pub type Scrollable<T> = ScrollableWidget<T, NannouBackend>;
 
 pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ----
@@ -64,6 +66,15 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     fn max_size(self, constraint: SizeConstraint) -> MaxSize<T> {
         MaxSize::new(self, constraint)
     }
+
+    // ----
+    // ScrollExt
+    // ----
+
+    fn scroll(self) -> Scrollable<T> {
+        Scrollable::new(self)
+    }
+
     // ----
     // DecorationsExt
     // ----
@@ -96,7 +107,6 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
         Self: Deref<Target = W> + DerefMut,
     {
         Styled::new::<T>(self, lens, lens_widget)
-        //CoreExt::styled(self, lens, lens_widget)
     }
 }
 

@@ -13,3 +13,4 @@ utopia_decorations = { path = "../utopia_decorations" }
 utopia_image = { path = "../utopia_image" }
 utopia_layout = { path = "../utopia_layout" }
 utopia_text = { path = "../utopia_text" }
+utopia_scroll = { path = "../utopia_scroll" }
