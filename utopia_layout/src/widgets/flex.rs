@@ -206,14 +206,14 @@ where
             });
 
         match flex_direction {
-            FlexDirection::Row => Size {
+            FlexDirection::Row => bc.constrain(Size {
                 width: position.x,
                 height: liner,
-            },
-            FlexDirection::Column => Size {
+            }),
+            FlexDirection::Column => bc.constrain(Size {
                 width: liner,
                 height: position.y,
-            },
+            }),
         }
     }
 
