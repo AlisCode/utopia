@@ -17,6 +17,24 @@ pub struct Styled<U, L, LW, W, TW, B> {
     _b: std::marker::PhantomData<B>,
 }
 
+impl<U, L, LW, W, TW: Deref<Target = W> + DerefMut, B> std::ops::Deref
+    for Styled<U, L, LW, W, TW, B>
+{
+    type Target = W;
+
+    fn deref(&self) -> &Self::Target {
+        self.widget.deref()
+    }
+}
+
+impl<U, L, LW, W, TW: Deref<Target = W> + DerefMut, B> std::ops::DerefMut
+    for Styled<U, L, LW, W, TW, B>
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.widget.deref_mut()
+    }
+}
+
 impl<U: Clone, L, LW: Lens<W, U>, W, TW: Deref<Target = W> + DerefMut, B: Backend>
     Styled<U, L, LW, W, TW, B>
 {
