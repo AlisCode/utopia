@@ -5,6 +5,7 @@ members = [
 	"utopia_image",
 	"utopia_layout",
 	"utopia_nannou",
+	"utopia_scroll",
 	"utopia_text",
 	"utopia_tui",
 ]

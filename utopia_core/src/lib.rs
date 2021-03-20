@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use math::{Size, Vector2};
+use math::Size;
 
 pub mod contexts;
 pub mod controllers;
@@ -83,17 +83,8 @@ impl BoxConstraints {
 #[derive(Debug)]
 pub enum CommonPrimitive<P> {
     None,
-    Group {
-        children: Vec<P>,
-    },
-    Cached {
-        cache: Arc<P>,
-    },
-    Clip {
-        bounds: Size,
-        offset: Vector2,
-        content: Box<P>,
-    },
+    Group { children: Vec<P> },
+    Cached { cache: Arc<P> },
 }
 
 impl<P> From<P> for CommonPrimitive<P> {
