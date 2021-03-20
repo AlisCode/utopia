@@ -4,12 +4,11 @@ A modular, data-driven UI toolkit with a focus on games
 
 ## Roadmap 
 
-* Dynamically change a param of a Widget (through lenses, perhaps?)
-* Scrolling widget
-	* Clip primitive
+* Scrolling
 	* Scrollbar widget
 * Stack widget
-* Handle reactions 
+* "Custom widgets" (function returns a TypedWidget<T, B>)
+* Handle event reactions 
 * Utility (form) widgets : 
 	* Button
 	* TextInput widget
