@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use math::Size;
 
+pub mod component;
 pub mod contexts;
 pub mod controllers;
 pub mod interface;
@@ -85,6 +86,7 @@ pub enum CommonPrimitive<P> {
     None,
     Group { children: Vec<P> },
     Cached { cache: Arc<P> },
+    Specific(Box<P>),
 }
 
 impl<P> From<P> for CommonPrimitive<P> {
