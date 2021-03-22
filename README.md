@@ -4,24 +4,23 @@ A modular, data-driven UI toolkit with a focus on games
 
 ## Roadmap 
 
-* Scrolling
-	* Scrollbar widget
 * Stack widget
-* "Custom widgets" (function returns a TypedWidget<T, B>)
 * Handle event reactions 
+* Animations, tweening
+* Handle futures, async components
+* Proper caching of primitives / render optimisations / re-layout only when required 
 * Utility (form) widgets : 
 	* Button
 	* TextInput widget
 	* Checkboxes,
 	* Optionboxes,
-	* Optiongroup
+	* OptionGroup
 	* Slider,
 	* Progress bar,
 	* Select,
 	* Switch,
 * Drag-and-drop
 * Tabs widget
+* Table widget
 * Canvas?
-* Animations, tweening
-* Handle futures, async components
-* Validation process
+* Validation process for Forms
