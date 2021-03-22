@@ -21,8 +21,8 @@ use utopia_layout::{
     },
     SizeConstraint,
 };
-use utopia_scroll::widget::Scrollable as ScrollableWidget;
-use utopia_text::widgets::text::Text as TextWidget;
+use utopia_scroll::widgets::scrollview::ScrollView as ScrollViewWidget;
+use utopia_text::widgets::{label::Label as LabelWidget, text::Text as TextWidget};
 
 use crate::NannouBackend;
 
@@ -33,6 +33,7 @@ pub type Image = ImageWidget<Texture>;
 pub type NannouWidgetPod<T> = WidgetPod<T, NannouBackend>;
 pub type Flex<T> = FlexWidget<T, NannouBackend>;
 pub type Text = TextWidget<Font, Color>;
+pub type Label = LabelWidget<Font, Color>;
 pub type Border<T> = BorderWidget<T, Color, NannouBackend>;
 pub type Background<T> = BackgroundWidget<T, Color, NannouBackend>;
 pub type LensWrap<T, U, L, W> = LensWrapWidget<T, U, L, W, NannouBackend>;
@@ -40,7 +41,7 @@ pub type Padding<T> = PaddingWidget<T, NannouBackend>;
 pub type MinSize<T> = MinSizeWidget<T, NannouBackend>;
 pub type MaxSize<T> = MaxSizeWidget<T, NannouBackend>;
 pub type Styled<U, L, LW, W, TW> = StyledWidget<U, L, LW, W, TW, NannouBackend>;
-pub type Scrollable<T> = ScrollableWidget<T, NannouBackend>;
+pub type ScrollView<T> = ScrollViewWidget<T, NannouBackend>;
 
 pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ----
@@ -71,8 +72,8 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ScrollExt
     // ----
 
-    fn scroll(self) -> Scrollable<T> {
-        Scrollable::new(self)
+    fn scroll(self) -> ScrollView<T> {
+        ScrollView::new(self)
     }
 
     // ----

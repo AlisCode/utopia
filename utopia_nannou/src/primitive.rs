@@ -117,6 +117,12 @@ impl From<ClipPrimitive<NannouPrimitive>> for NannouPrimitive {
     }
 }
 
+impl From<()> for NannouPrimitive {
+    fn from(_input: ()) -> Self {
+        NannouPrimitive::Common(CommonPrimitive::None)
+    }
+}
+
 impl<A, B> From<(A, B)> for NannouPrimitive
 where
     NannouPrimitive: From<A>,

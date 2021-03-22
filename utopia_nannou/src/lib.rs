@@ -4,6 +4,7 @@ use utopia_core::{contexts::ContextProvider, math::Size, Backend};
 use utopia_image::context::ImageContext;
 use utopia_text::context::MeasureBrush;
 
+pub mod components;
 pub mod event;
 pub mod font;
 pub mod interface;
@@ -65,5 +66,11 @@ impl ContextProvider<MeasureBrush<Font>> for NannouBackend {
 impl ContextProvider<ImageContext<Texture>> for NannouBackend {
     fn provide(&self) -> &ImageContext<Texture> {
         &self.image_context
+    }
+}
+
+impl ContextProvider<()> for NannouBackend {
+    fn provide(&self) -> &() {
+        &()
     }
 }
