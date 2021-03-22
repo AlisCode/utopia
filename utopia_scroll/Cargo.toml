@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 utopia_core = { path = "../utopia_core" }
+utopia_decorations = { path = "../utopia_decorations" }
+utopia_layout = { path = "../utopia_layout" }
