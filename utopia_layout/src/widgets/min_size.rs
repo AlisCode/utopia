@@ -25,7 +25,7 @@ impl<T, B: Backend> Widget<T> for MinSize<T, B> {
     type Primitive = B::Primitive;
     type Context = B;
     type Event = B::Event;
-    type Reaction = ();
+    type Reaction = B::EventReaction;
 
     fn draw(&self, origin: Vector2, size: Size, data: &T) -> Self::Primitive {
         TypedWidget::<T, B>::draw(&self.widget, origin, size, data)
@@ -51,5 +51,15 @@ impl<T, B: Backend> Widget<T> for MinSize<T, B> {
             max: bc.max.clone(),
         };
         TypedWidget::<T, B>::layout(&mut self.widget, &child_bc, context, data)
+    }
+
+    fn event(
+        &mut self,
+        origin: Vector2,
+        size: Size,
+        data: &mut T,
+        event: Self::Event,
+    ) -> Option<Self::Reaction> {
+        TypedWidget::<T, B>::event(&mut self.widget, origin, size, data, event)
     }
 }
