@@ -6,10 +6,10 @@ use utopia_core::{
 
 use crate::primitive::ClipPrimitive;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct ScrollableState {
-    offset_x: f32,
-    offset_y: f32,
+    pub offset_x: f32,
+    pub offset_y: f32,
     scroll_x: ScrollType,
     scroll_y: ScrollType,
     /// Read-only (changing this won't affect the size of child_size)
@@ -18,15 +18,17 @@ pub struct ScrollableState {
 
 pub struct Scrollable<T, B: Backend> {
     child: WidgetPod<T, B>,
-    pub scrollbar: Option<WidgetPod<ScrollableState, B>>,
-    state: ScrollableState,
+    pub scrollbar_vertical: Option<WidgetPod<ScrollableState, B>>,
+    pub scrollbar_horizontal: Option<WidgetPod<ScrollableState, B>>,
+    pub state: ScrollableState,
 }
 
 impl<T, B: Backend> Scrollable<T, B> {
     pub fn new<TW: TypedWidget<T, B> + 'static>(child: TW) -> Self {
         Scrollable {
             child: WidgetPod::new(child),
-            scrollbar: None,
+            scrollbar_vertical: None,
+            scrollbar_horizontal: None,
             state: ScrollableState::default(),
         }
     }
@@ -58,7 +60,7 @@ impl<T, B: Backend> Widget<T> for Scrollable<T, B> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ScrollType {
     Hidden,
     Scroll,
