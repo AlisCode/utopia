@@ -17,7 +17,8 @@ use utopia_image::widgets::image::Image as ImageWidget;
 use utopia_layout::{
     widgets::{
         align::Align as AlignWidget, flex::Flex as FlexWidget, max_size::MaxSize as MaxSizeWidget,
-        min_size::MinSize as MinSizeWidget, padding::Padding as PaddingWidget, LayoutExt,
+        min_size::MinSize as MinSizeWidget, padding::Padding as PaddingWidget,
+        stack::Stack as StackWidget, LayoutExt,
     },
     SizeConstraint,
 };
@@ -42,6 +43,7 @@ pub type MinSize<T> = MinSizeWidget<T, NannouBackend>;
 pub type MaxSize<T> = MaxSizeWidget<T, NannouBackend>;
 pub type Styled<U, L, LW, W, TW> = StyledWidget<U, L, LW, W, TW, NannouBackend>;
 pub type ScrollView<T> = ScrollViewWidget<T, NannouBackend>;
+pub type Stack<T> = StackWidget<T, NannouBackend>;
 
 pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ----

@@ -4,7 +4,6 @@ A modular, data-driven UI toolkit with a focus on games
 
 ## Roadmap 
 
-* Stack widget
 * Handle event reactions 
 * Animations, tweening
 * Handle futures, async components
@@ -19,8 +18,11 @@ A modular, data-driven UI toolkit with a focus on games
 	* Progress bar,
 	* Select,
 	* Switch,
+* Rich text
 * Drag-and-drop
 * Tabs widget
 * Table widget
 * Canvas?
 * Validation process for Forms
+* Lifecycle events
+* Widget focus ? 

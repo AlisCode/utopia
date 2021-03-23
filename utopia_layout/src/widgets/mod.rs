@@ -16,6 +16,7 @@ pub mod max_size;
 pub mod min_size;
 pub mod padding;
 pub mod spacer;
+pub mod stack;
 
 pub trait LayoutExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
     fn padding(self) -> Padding<T, B> {
