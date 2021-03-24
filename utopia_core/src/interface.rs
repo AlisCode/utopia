@@ -10,6 +10,7 @@ pub struct Interface<T, B: Backend> {
     event_step: EventStep<B::Event, B::EventReaction>,
     paint_step: PaintStep<B::Primitive>,
     layout_step: LayoutStep,
+    event_reactions: Vec<B::EventReaction>,
 }
 
 impl<T, B: Backend> Interface<T, B> {
@@ -19,6 +20,7 @@ impl<T, B: Backend> Interface<T, B> {
             event_step: EventStep::default(),
             paint_step: PaintStep::default(),
             layout_step: LayoutStep::default(),
+            event_reactions: Vec::default(),
         }
     }
 
@@ -48,5 +50,9 @@ impl<T, B: Backend> Interface<T, B> {
 
     pub fn paint(&self, data: &T) -> B::Primitive {
         self.paint_step.apply::<T, B, _>(&self.widget, data)
+    }
+
+    pub fn drain_reactions(&mut self) -> impl Iterator<Item = B::EventReaction> + '_ {
+        self.event_reactions.drain(0..)
     }
 }
