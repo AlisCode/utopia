@@ -4,38 +4,41 @@ use crate::{
     Backend,
 };
 
-pub struct EventStep<E> {
+pub struct EventStep<E, R> {
     pub size: Size,
     event_queue: Vec<E>,
+    reaction_queue: Vec<R>,
 }
 
-impl<E> Default for EventStep<E> {
+impl<E, R> Default for EventStep<E, R> {
     fn default() -> Self {
         EventStep {
             size: Size::default(),
             event_queue: Vec::default(),
+            reaction_queue: Vec::default(),
         }
     }
 }
 
-impl<E> EventStep<E> {
+impl<E, R> EventStep<E, R> {
     pub fn queue_event(&mut self, event: E) {
         self.event_queue.push(event)
     }
 }
 
-impl<E> EventStep<E> {
+impl<E, R> EventStep<E, R> {
     pub fn apply<T, B, TW: TypedWidget<T, B>>(&mut self, visitable: &mut TW, data: &mut T)
     where
-        B: Backend<Event = E>,
+        B: Backend<Event = E, EventReaction = R>,
     {
         let size = self.size;
-        let _reactions: Vec<_> = self
+        let mut reactions: Vec<B::EventReaction> = self
             .event_queue
             .drain(0..)
-            .map(|event| {
-                <TW as TypedWidget<T, B>>::event(visitable, Vector2::ZERO, size, data, event);
+            .filter_map(|event| {
+                <TW as TypedWidget<T, B>>::event(visitable, Vector2::ZERO, size, data, event)
             })
             .collect();
+        self.reaction_queue.append(&mut reactions);
     }
 }

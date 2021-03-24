@@ -8,6 +8,7 @@ pub mod controllers;
 pub mod interface;
 pub mod lens;
 pub mod math;
+pub mod reactions;
 pub mod steps;
 pub mod widgets;
 

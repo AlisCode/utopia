@@ -7,7 +7,7 @@ use crate::{
 
 pub struct Interface<T, B: Backend> {
     widget: WidgetPod<T, B>,
-    event_step: EventStep<B::Event>,
+    event_step: EventStep<B::Event, B::EventReaction>,
     paint_step: PaintStep<B::Primitive>,
     layout_step: LayoutStep,
 }
