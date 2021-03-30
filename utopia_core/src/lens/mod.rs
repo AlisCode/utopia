@@ -1,3 +1,4 @@
+mod empty;
 mod field;
 
 pub trait Lens<T, U> {
@@ -5,4 +6,5 @@ pub trait Lens<T, U> {
     fn with_mut<V, F: FnOnce(&mut U) -> V>(&self, data: &mut T, f: F) -> V;
 }
 
+pub use empty::NoLens;
 pub use field::Field;

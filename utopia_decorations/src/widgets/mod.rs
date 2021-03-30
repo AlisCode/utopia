@@ -1,10 +1,11 @@
 use border::Border;
 use utopia_core::{widgets::TypedWidget, Backend};
 
-use self::background::Background;
+use self::{background::Background, scale::Scale};
 
 pub mod background;
 pub mod border;
+pub mod scale;
 
 pub trait DecorationsExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
     fn border<Color: Default>(self) -> Border<T, Color, B> {
@@ -13,6 +14,10 @@ pub trait DecorationsExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
 
     fn background<Color: Default>(self) -> Background<T, Color, B> {
         Background::new(self)
+    }
+
+    fn scaled(self) -> Scale<T, B> {
+        Scale::new(self)
     }
 }
 

@@ -1,7 +1,10 @@
 use crate::{font::Font, widgets::Color};
-use nannou::{geom::rect::Rect, text::Scale, wgpu::Texture, Draw};
+use nannou::{geom::rect::Rect, prelude::Vector3, text::Scale, wgpu::Texture, Draw};
 use utopia_core::CommonPrimitive;
-use utopia_decorations::primitives::{border::BorderPrimitive, quad::QuadPrimitive};
+use utopia_decorations::{
+    primitives::{border::BorderPrimitive, quad::QuadPrimitive},
+    widgets::scale::ScaledPrimitive,
+};
 use utopia_image::primitive::ImagePrimitive;
 use utopia_scroll::primitive::ClipPrimitive;
 use utopia_text::primitives::text::TextPrimitive;
@@ -14,6 +17,7 @@ pub enum NannouPrimitive {
     Border(BorderPrimitive<Color>),
     Image(ImagePrimitive<Texture>),
     Clip(ClipPrimitive<NannouPrimitive>),
+    Scaled(ScaledPrimitive<NannouPrimitive>),
 }
 
 impl NannouPrimitive {
@@ -77,6 +81,11 @@ impl NannouPrimitive {
                     .x_y(-clip.offset.x, clip.offset.y);
                 clip.primitive.draw(&scissor, win_height);
             }
+            NannouPrimitive::Scaled(scaled) => {
+                // FIXME: Not scaled with proper origin ?
+                let scaled_draw = draw.scale_axes(Vector3::new(scaled.scale_x, scaled.scale_y, 1.));
+                scaled.primitive.draw(&scaled_draw, win_height);
+            }
         }
     }
 }
@@ -114,6 +123,12 @@ impl From<ImagePrimitive<Texture>> for NannouPrimitive {
 impl From<ClipPrimitive<NannouPrimitive>> for NannouPrimitive {
     fn from(input: ClipPrimitive<NannouPrimitive>) -> Self {
         NannouPrimitive::Clip(input)
+    }
+}
+
+impl From<ScaledPrimitive<NannouPrimitive>> for NannouPrimitive {
+    fn from(input: ScaledPrimitive<NannouPrimitive>) -> Self {
+        NannouPrimitive::Scaled(input)
     }
 }
 

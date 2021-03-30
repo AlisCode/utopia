@@ -4,7 +4,6 @@ A modular, data-driven UI toolkit with a focus on games
 
 ## Roadmap 
 
-* Handle event reactions 
 * Animations, tweening
 * Handle futures, async components
 * Proper caching of primitives / render optimisations / re-layout only when required 

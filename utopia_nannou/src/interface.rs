@@ -55,7 +55,10 @@ impl<T: 'static> NannouInterface<T> {
     fn event(app: &App, state: &mut Self, event: Event) {
         let win_rect = app.window_rect();
         match event {
-            Event::Update(_update) => {
+            Event::Update(update) => {
+                state
+                    .interface
+                    .add_event(NannouEvent::Update(update.since_last));
                 state.interface.layout(&state.backend, &state.data);
             }
             Event::WindowEvent { simple, .. } => {

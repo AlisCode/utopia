@@ -9,6 +9,7 @@ pub mod event;
 pub mod font;
 pub mod interface;
 pub mod primitive;
+pub mod reaction;
 pub mod widgets;
 
 pub struct NannouBackend {
@@ -34,7 +35,7 @@ impl Default for NannouBackend {
 impl Backend for NannouBackend {
     type Primitive = primitive::NannouPrimitive;
     type Event = event::NannouEvent;
-    type EventReaction = ();
+    type EventReaction = reaction::NannouReaction;
 }
 
 fn measure(contents: &str, font: Font, size: u16) -> Size {

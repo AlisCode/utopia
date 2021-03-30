@@ -2,6 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use crate::font::Font;
 use nannou::wgpu::Texture;
+use utopia_animations::widgets::animated::Animated as AnimatedWidget;
 use utopia_core::{
     controllers::TypedController,
     lens::Lens,
@@ -11,7 +12,8 @@ use utopia_core::{
     },
 };
 use utopia_decorations::widgets::{
-    background::Background as BackgroundWidget, border::Border as BorderWidget, DecorationsExt,
+    background::Background as BackgroundWidget, border::Border as BorderWidget,
+    scale::Scale as ScaleWidget, DecorationsExt,
 };
 use utopia_image::widgets::image::Image as ImageWidget;
 use utopia_layout::{
@@ -44,6 +46,8 @@ pub type MaxSize<T> = MaxSizeWidget<T, NannouBackend>;
 pub type Styled<U, L, LW, W, TW> = StyledWidget<U, L, LW, W, TW, NannouBackend>;
 pub type ScrollView<T> = ScrollViewWidget<T, NannouBackend>;
 pub type Stack<T> = StackWidget<T, NannouBackend>;
+pub type Scale<T> = ScaleWidget<T, NannouBackend>;
+pub type Animated<T, U, L, EF, TW, W, LTU> = AnimatedWidget<T, U, L, EF, TW, W, NannouBackend, LTU>;
 
 pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ----
@@ -88,6 +92,10 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
 
     fn background(self) -> Background<T> {
         DecorationsExt::<T, NannouBackend>::background(self)
+    }
+
+    fn scaled(self) -> Scale<T> {
+        DecorationsExt::<T, NannouBackend>::scaled(self)
     }
 
     // ----
