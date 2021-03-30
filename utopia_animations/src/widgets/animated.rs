@@ -130,7 +130,7 @@ impl<
         B: Backend,
     > Animated<T, U, L, Linear, TW, W, B>
 {
-    pub fn animate_to(widget: TW, lens: L, target: U) -> Self {
+    pub fn animate(widget: TW, lens: L, target: U) -> Self {
         Animated {
             widget,
             lens,
@@ -146,7 +146,7 @@ impl<
         }
     }
 
-    pub fn animate_to_data<LTU: Lens<T, U>>(
+    pub fn animate_from_data<LTU: Lens<T, U>>(
         widget: TW,
         lens: L,
         target: LTU,

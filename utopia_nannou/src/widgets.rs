@@ -2,10 +2,13 @@ use std::ops::{Deref, DerefMut};
 
 use crate::font::Font;
 use nannou::wgpu::Texture;
-use utopia_animations::widgets::animated::Animated as AnimatedWidget;
+use utopia_animations::{
+    widgets::{animated::Animated as AnimatedWidget, AnimationExt},
+    CanTween, Linear,
+};
 use utopia_core::{
     controllers::TypedController,
-    lens::Lens,
+    lens::{Lens, NoLens},
     widgets::{
         controlled::Controlled as ControlledWidget, lens::LensWrap as LensWrapWidget,
         pod::WidgetPod, styled::Styled as StyledWidget, CoreExt, TypedWidget,
@@ -47,7 +50,8 @@ pub type Styled<U, L, LW, W, TW> = StyledWidget<U, L, LW, W, TW, NannouBackend>;
 pub type ScrollView<T> = ScrollViewWidget<T, NannouBackend>;
 pub type Stack<T> = StackWidget<T, NannouBackend>;
 pub type Scale<T> = ScaleWidget<T, NannouBackend>;
-pub type Animated<T, U, L, EF, TW, W, LTU> = AnimatedWidget<T, U, L, EF, TW, W, NannouBackend, LTU>;
+pub type Animated<T, U, L, EF, TW, W, LTU = NoLens> =
+    AnimatedWidget<T, U, L, EF, TW, W, NannouBackend, LTU>;
 
 pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ----
@@ -101,6 +105,9 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
     // ----
     // CoreExt
     // ----
+    fn boxed(self) -> Box<Self> {
+        Box::new(self)
+    }
 
     fn controlled<C: TypedController<T, Self, NannouBackend>>(
         self,
@@ -118,6 +125,37 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
         Self: Deref<Target = W> + DerefMut,
     {
         Styled::new::<T>(self, lens, lens_widget)
+    }
+
+    // ----
+    // AnimationExt
+    // ----
+    fn animate<L: Lens<<Self as Deref>::Target, U>, U: Clone + CanTween>(
+        self,
+        lens: L,
+        target: U,
+    ) -> Animated<T, U, L, Linear, Self, <Self as Deref>::Target>
+    where
+        Self: Deref + DerefMut,
+        <Self as Deref>::Target: Sized,
+    {
+        AnimationExt::animate(self, lens, target)
+    }
+
+    fn animate_from_data<
+        L: Lens<<Self as Deref>::Target, U>,
+        LTU: Lens<T, U>,
+        U: Clone + CanTween,
+    >(
+        self,
+        lens: L,
+        target: LTU,
+    ) -> Animated<T, U, L, Linear, Self, <Self as Deref>::Target, LTU>
+    where
+        Self: Deref + DerefMut,
+        <Self as Deref>::Target: Sized,
+    {
+        AnimationExt::animate_from_data(self, lens, target)
     }
 }
 
