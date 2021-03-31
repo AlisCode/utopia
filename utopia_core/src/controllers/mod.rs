@@ -4,7 +4,10 @@ use crate::{
     Backend,
 };
 
+use self::map::MapReaction;
+
 pub mod click;
+pub mod map;
 
 /// A Controller is a bit of logic that reacts to a specific Event type.
 pub trait Controller<T, W: Widget<T>> {
@@ -19,6 +22,15 @@ pub trait Controller<T, W: Widget<T>> {
         data: &mut T,
         event: Self::Event,
     ) -> Option<Self::Reaction>;
+}
+
+pub trait ControllerExt<T, W: Widget<T>>: Controller<T, W> + Sized {
+    fn map<R, F: Fn(Self::Reaction) -> R + 'static>(self, mapper: F) -> MapReaction<Self, F> {
+        MapReaction {
+            controller: self,
+            mapper,
+        }
+    }
 }
 
 impl<T, W: Widget<T>, C: Controller<T, W>> Controller<T, W> for Box<C> {

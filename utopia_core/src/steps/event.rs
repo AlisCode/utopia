@@ -24,6 +24,10 @@ impl<E, R> EventStep<E, R> {
     pub fn queue_event(&mut self, event: E) {
         self.event_queue.push(event)
     }
+
+    pub fn drain_reactions(&mut self) -> Vec<R> {
+        self.reaction_queue.drain(0..).collect()
+    }
 }
 
 impl<E, R> EventStep<E, R> {

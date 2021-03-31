@@ -1,5 +1,6 @@
 use crate::{
     math::Size,
+    reactions::TypedReactionHandler,
     steps::{event::EventStep, layout::LayoutStep, paint::PaintStep},
     widgets::{pod::WidgetPod, TypedWidget},
     Backend, BoxConstraints,
@@ -10,7 +11,7 @@ pub struct Interface<T, B: Backend> {
     event_step: EventStep<B::Event, B::EventReaction>,
     paint_step: PaintStep<B::Primitive>,
     layout_step: LayoutStep,
-    event_reactions: Vec<B::EventReaction>,
+    reaction_handlers: Vec<Box<dyn TypedReactionHandler<T, B>>>,
 }
 
 impl<T, B: Backend> Interface<T, B> {
@@ -20,12 +21,19 @@ impl<T, B: Backend> Interface<T, B> {
             event_step: EventStep::default(),
             paint_step: PaintStep::default(),
             layout_step: LayoutStep::default(),
-            event_reactions: Vec::default(),
+            reaction_handlers: Vec::default(),
         }
     }
 
     pub fn set_widget<W: TypedWidget<T, B> + 'static>(&mut self, widget: W) {
         self.widget = WidgetPod::new(widget)
+    }
+
+    pub fn add_reaction_handler<TRH: TypedReactionHandler<T, B> + 'static>(
+        &mut self,
+        reaction_handler: TRH,
+    ) {
+        self.reaction_handlers.push(Box::new(reaction_handler));
     }
 
     pub fn add_event(&mut self, event: B::Event) {
@@ -41,6 +49,17 @@ impl<T, B: Backend> Interface<T, B> {
 
     pub fn event(&mut self, data: &mut T) {
         self.event_step.apply::<T, B, _>(&mut self.widget, data);
+        let reactions = self.event_step.drain_reactions();
+
+        for reac in reactions {
+            let mut r = Some(reac);
+            for handler in self.reaction_handlers.iter_mut() {
+                match r {
+                    Some(reac) => r = handler.handle_reaction(reac, data),
+                    None => break,
+                }
+            }
+        }
     }
 
     pub fn layout(&mut self, backend: &B, data: &T) {
@@ -50,9 +69,5 @@ impl<T, B: Backend> Interface<T, B> {
 
     pub fn paint(&self, data: &T) -> B::Primitive {
         self.paint_step.apply::<T, B, _>(&self.widget, data)
-    }
-
-    pub fn drain_reactions(&mut self) -> impl Iterator<Item = B::EventReaction> + '_ {
-        self.event_reactions.drain(0..)
     }
 }
