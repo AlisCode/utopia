@@ -1,7 +1,4 @@
-use crate::{
-    math::{Size, Vector2},
-    widgets::Widget,
-};
+use crate::math::{Size, Vector2};
 
 use super::Controller;
 
@@ -31,13 +28,12 @@ pub enum MouseButton {
     Other(usize),
 }
 
-impl<T, W: Widget<T>> Controller<T, W> for Click<T> {
+impl<T> Controller<T> for Click<T> {
     type Event = MouseClickEvent;
     type Reaction = ();
 
     fn event(
         &mut self,
-        _child: &mut W,
         origin: Vector2,
         size: Size,
         data: &mut T,

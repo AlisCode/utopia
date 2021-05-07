@@ -22,10 +22,7 @@ pub trait CoreExt<T, B: Backend>: TypedWidget<T, B> + Sized + 'static {
         Box::new(self)
     }
 
-    fn controlled<C: TypedController<T, Self, B>>(
-        self,
-        controller: C,
-    ) -> Controlled<T, Self, C, B> {
+    fn controlled<C: TypedController<T, B>>(self, controller: C) -> Controlled<T, Self, C, B> {
         Controlled::new(self, controller)
     }
 

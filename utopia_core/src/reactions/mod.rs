@@ -3,6 +3,7 @@ use crate::Backend;
 pub enum CommonReaction {
     TakeFocus,
     ReDraw,
+    Draw,
     ReLayout,
 }
 

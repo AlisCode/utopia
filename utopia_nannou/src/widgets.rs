@@ -109,7 +109,7 @@ pub trait WidgetExt<T>: TypedWidget<T, NannouBackend> + Sized + 'static {
         Box::new(self)
     }
 
-    fn controlled<C: TypedController<T, Self, NannouBackend>>(
+    fn controlled<C: TypedController<T, NannouBackend>>(
         self,
         controller: C,
     ) -> Controlled<T, Self, C> {

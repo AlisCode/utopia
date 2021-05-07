@@ -21,7 +21,7 @@ impl<T, W, C, B: Backend> Controlled<T, W, C, B> {
     }
 }
 
-impl<T, W: TypedWidget<T, B> + Widget<T>, C: TypedController<T, W, B>, B: Backend> Widget<T>
+impl<T, W: TypedWidget<T, B> + Widget<T>, C: TypedController<T, B>, B: Backend> Widget<T>
     for Controlled<T, W, C, B>
 {
     type Primitive = B::Primitive;
@@ -44,13 +44,6 @@ impl<T, W: TypedWidget<T, B> + Widget<T>, C: TypedController<T, W, B>, B: Backen
         data: &mut T,
         event: Self::Event,
     ) -> Option<Self::Reaction> {
-        TypedController::<T, W, B>::event(
-            &mut self.controller,
-            &mut self.widget,
-            origin,
-            size,
-            data,
-            event,
-        )
+        TypedController::<T, B>::event(&mut self.controller, origin, size, data, event)
     }
 }

@@ -19,7 +19,7 @@ Greatly inspired by Druid and Iced.
 * Handle futures, async components
 * Proper caching of primitives / render optimisations / re-layout only when required 
 * Extract Lenses to their own crate, and provide a proc macro
-* General cleanup. Fix todos, write some documentation, ensure the basic design is correct 
+* General cleanup. Fix todos, write some documentation, ensure the basic design is correct, clean transforms for Event and Reactions 
 * Write a `bevy` backend 
 * Utility (form) widgets : 
 	* Button
